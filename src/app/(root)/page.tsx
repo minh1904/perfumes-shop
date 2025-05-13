@@ -1,7 +1,9 @@
+import Hero from '@/components/ui/landingpage/Hero';
+
 export default function Home() {
   return (
-    <>
-      <p className="font-bold">Helllo</p>
-    </>
+    <div>
+      <Hero />
+    </div>
   );
 }
