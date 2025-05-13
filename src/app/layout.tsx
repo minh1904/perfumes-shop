@@ -55,7 +55,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${generalSans.variable}  ${roslindaleItalic.variable}  ${roslindaleMediumItalic.variable} antialiased`}
+        className={`${generalSans.variable} ${roslindaleItalic.variable} ${roslindaleMediumItalic.variable} antialiased`}
       >
         {children}
       </body>

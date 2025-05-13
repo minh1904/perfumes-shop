@@ -1,3 +1,5 @@
+import Navbar from "@/components/layout/Navbar";
+
 export default function RootLayout({
   children,
 }: {
@@ -8,6 +10,7 @@ export default function RootLayout({
       <body>
         {/* Layout UI */}
         {/* Place children where you want to render a page or nested layout */}
+        <Navbar></Navbar>
         <main>{children}</main>
       </body>
     </html>

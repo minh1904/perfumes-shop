@@ -114,14 +114,36 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 font-general-sans font-medium;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  html {
+    font-size: 14px;
+  }
+  @media (min-width: 768px) {
+    html {
+      font-size: 16px;
+    }
+  }
+  .navbar {
+    @apply flex h-14 w-dvw items-center justify-between px-8 md:h-20 md:px-16;
+  }
+  .navbar_middle {
+    @apply hidden space-x-7 text-[0.8rem] uppercase md:block;
+  }
+  .navbar_right {
+    @apply bg-blacky hidden h-12 w-32 items-center justify-center space-x-2 rounded-3xl text-white md:flex;
   }
 }
 @theme {
   --font-general-sans: var(--font-general-sans);
   --font-roslindale-italic: var(--font-roslindale-italic);
   --font-roslindale-medium-italic: var(--font-roslindale-medium-italic);
+  --color-pinky: #cf4d7d;
+  --color-blacky: #272727;
+  --color-masculine: #dadada;
+  --color-feminine: #ffc2d8;
+  --color-unisex: #ffafb1;
 }
