@@ -129,7 +129,7 @@
   }
 
   .navbar {
-    @apply sticky top-0 left-0 z-9999 flex h-18 w-full items-center justify-between overflow-x-hidden bg-white px-8 md:h-20 md:px-16;
+    @apply fixed top-0 left-0 z-9999 flex h-18 w-full items-center justify-between overflow-x-hidden bg-white px-8 md:h-20 md:px-16;
   }
   .navbar_middle {
     @apply text-blacky hidden space-x-7 text-[0.7rem] uppercase md:block;
@@ -138,22 +138,22 @@
     @apply bg-blacky hidden h-12 w-32 items-center justify-center space-x-2 rounded-3xl text-white md:flex;
   }
   .hero_section {
-    @apply relative top-1/2 w-full translate-y-1/9;
+    @apply flex h-screen flex-col items-center justify-center md:justify-evenly;
   }
   .hero_title {
-    @apply relative right-1/2 z-30 mt-17 w-full translate-x-1/2 text-center text-5xl font-bold md:mt-11 md:text-7xl 2xl:text-8xl;
+    @apply relative z-10 text-center text-5xl font-bold md:mt-11 md:text-7xl 2xl:text-8xl;
   }
   .hero_image {
-    @apply absolute top-34 right-1/2 h-auto w-56 translate-x-1/2 -rotate-20 rounded-lg object-contain md:top-5 md:w-[17rem] lg:top-7;
+    @apply z-0 h-auto w-56 -rotate-20 rounded-lg object-contain md:absolute md:top-40 md:w-[17rem] lg:top-45 2xl:top-65 2xl:w-[21rem];
   }
   .hero_sp {
-    @apply relative z-20 mt-60 flex flex-col items-center justify-center gap-8 md:mt-20 lg:mt-16;
+    @apply flex flex-col items-center justify-center gap-8 md:mt-20 lg:mt-16;
   }
   .hero_cta1 {
     @apply bg-blacky hidden h-14 w-55 items-center justify-center gap-2 rounded-full text-[1.3rem] text-white uppercase lg:flex;
   }
   .hero_cta2 {
-    @apply bg-blacky mt-30 flex h-14 w-80 items-center justify-center gap-2 rounded-full text-[1.3rem] text-white uppercase lg:hidden;
+    @apply bg-blacky flex h-14 w-80 items-center justify-center gap-2 rounded-full text-[1.3rem] text-white uppercase lg:hidden;
   }
   .hero_des {
     @apply px-8 text-center md:w-[80%] lg:mt-5 lg:w-[49%] 2xl:w-[40%];
@@ -168,5 +168,5 @@
   --color-masculine: #dadada;
   --color-feminine: #ffc2d8;
   --color-unisex: #ffafb1;
-  --breakpoint-2xl: 100rem;
+  --breakpoint-2xl: 98rem;
 }
