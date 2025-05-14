@@ -5,12 +5,12 @@ import './globals.css';
 const generalSans = localFont({
   src: [
     {
-      path: '../assets/fonts/GeneralSans-Variable.woff2',
+      path: '../../public/fonts/GeneralSans-Variable.woff2',
       weight: '100 900',
       style: 'normal',
     },
     {
-      path: '../assets/fonts/GeneralSans-VariableItalic.woff2',
+      path: '../../public/fonts/GeneralSans-VariableItalic.woff2',
       weight: '100 900',
       style: 'italic',
     },
@@ -22,7 +22,7 @@ const generalSans = localFont({
 const roslindaleItalic = localFont({
   src: [
     {
-      path: '../assets/fonts/Roslindale-DeckNarrowItalic-Testing.woff2',
+      path: '../../public/fonts/Roslindale-DeckNarrowItalic-Testing.woff2',
       weight: '700',
       style: 'italic',
     },
@@ -34,7 +34,7 @@ const roslindaleItalic = localFont({
 const roslindaleMediumItalic = localFont({
   src: [
     {
-      path: '../assets/fonts/Roslindale-DeckNarrowMediumItalic-Testing.woff2',
+      path: '../../public/fonts/Roslindale-DeckNarrowMediumItalic-Testing.woff2',
       weight: '600',
       style: 'italic',
     },

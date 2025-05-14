@@ -4,7 +4,7 @@ import React from 'react';
 
 const Pledge = () => {
   return (
-    <div className="md:relative">
+    <div className="pt-10 md:relative">
       <h2 className="pledge_title">
         Real Scent,
         <br className="md:hidden" />
@@ -26,7 +26,7 @@ const Pledge = () => {
           </p>
         </div>
         <div className="pledge_card top-[60%] left-[5%] lg:top-[33%]">
-          <Gem strokeWidth={1.25} className="h-6 w-6 md:h-8 md:w-8" />
+          <SearchCheck strokeWidth={1.25} className="h-6 w-6 md:h-8 md:w-8" />
           <p className="text-sm font-semibold md:text-base">Authenticity Guaranteed</p>
           <p className="text-xs lg:text-base">
             100% genuine perfumes, backed by invoices and verified sources. Trust your scent. Trust
@@ -34,7 +34,7 @@ const Pledge = () => {
           </p>
         </div>
         <div className="pledge_card top-[10%] right-[5%] lg:top-[48%] lg:right-[5%]">
-          <Gem strokeWidth={1.25} className="h-6 w-6 md:h-8 md:w-8" />
+          <Sparkle strokeWidth={1.25} className="h-6 w-6 md:h-8 md:w-8" />
           <p className="text-sm font-semibold md:text-base">Experience-First Service</p>
           <p className="text-xs lg:text-base">
             More than a transaction — we’re here to guide, inspire, and personalize every step of
@@ -42,7 +42,7 @@ const Pledge = () => {
           </p>
         </div>
         <div className="pledge_card top-[60%] right-[5%] lg:top-[70%] lg:right-[24%]">
-          <Gem strokeWidth={1.25} className="h-6 w-6 md:h-8 md:w-8" />
+          <Handshake strokeWidth={1.25} className="h-6 w-6 md:h-8 md:w-8" />
           <p className="text-sm font-semibold md:text-base">Curated with Purpose</p>
           <p className="text-xs lg:text-base">
             We handpick fragrances from the world{"'"}s finest brands — so every scent you wear
