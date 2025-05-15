@@ -13,8 +13,9 @@ interface ProductProps {
     type: string;
     image: string | null;
   }[];
+  bgColor?: string;
 }
-const ScrollProduct = ({ products }: ProductProps) => {
+const ScrollProduct = ({ products, bgColor }: ProductProps) => {
   gsap.registerPlugin(Draggable, InertiaPlugin);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
@@ -81,7 +82,7 @@ const ScrollProduct = ({ products }: ProductProps) => {
       <div ref={scrollContentRef} className="scrollContent flex" style={{ cursor: 'grab' }}>
         {products.map((product) => (
           <div className="card flex-none" key={product.id} style={{ marginRight: '20px' }}>
-            <CartProduct products={product} />
+            <CartProduct products={product} bgColor={bgColor} />
           </div>
         ))}
       </div>
