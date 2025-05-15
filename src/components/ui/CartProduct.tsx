@@ -1,20 +1,18 @@
 import { PackagePlus } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
-interface products {
-  name: string;
-  price: number;
-  type: string;
-  image: string | null;
+
+interface ProductProps {
+  products: {
+    id: string;
+    name: string;
+    price: number;
+    type: string;
+    image: string | null;
+  };
 }
 
-const CartProduct = () => {
-  const products: products = {
-    name: 'Creed Viking EDP',
-    price: 345,
-    type: 'Creed',
-    image: 'https://res.cloudinary.com/ddsnh547w/image/upload/v1747235751/download_1_rdmwy4.png',
-  };
+const CartProduct = ({ products }: ProductProps) => {
   return (
     <div className="mt-7 pl-7">
       {' '}
