@@ -1,10 +1,11 @@
+import { MoveUpRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
 const Journal = () => {
   return (
-    <section className="bg-blacky flex flex-col gap-10 px-7 text-white lg:h-screen lg:flex-row lg:items-center lg:justify-center">
+    <section className="bg-blacky flex flex-col items-center justify-center gap-10 px-7 text-white lg:h-screen lg:flex-row lg:items-center lg:justify-center">
       <div className="lg:hidden">
         {' '}
         <h2 className="flex flex-col pt-15 text-center text-4xl font-semibold">
@@ -51,7 +52,7 @@ const Journal = () => {
           </p>
         </div>
 
-        <div className="flex flex-col gap-10 lg:flex-row">
+        <div className="flex flex-col items-center justify-center gap-10 lg:flex-row">
           <div className="text-blacky mt-7 items-start md:w-1/2">
             <Image
               src="https://res.cloudinary.com/ddsnh547w/image/upload/v1747367485/u4637976442_A_minimalistic_and_elegant_perfume_advertisement._18ad129d-eafd-4b7a-a7d7-ce36f1b67c48_2_ipeaqa.png"
@@ -60,7 +61,7 @@ const Journal = () => {
               height={1000}
               className="w-full object-cover lg:h-60"
             />
-            <div className="h-30 bg-white px-7 py-4">
+            <div className="h-35 bg-white px-7 py-4">
               <h3 className="text-2xl font-semibold"> The Scent of First Light</h3>
 
               <div className="mt-7 flex justify-between">
@@ -79,7 +80,7 @@ const Journal = () => {
               height={1000}
               className="w-full object-cover lg:h-60"
             />
-            <div className="h-30 bg-white px-7 py-4">
+            <div className="h-35 bg-white px-7 py-4">
               <h3 className="text-2xl font-semibold"> The Scent of First Light</h3>
 
               <div className="mt-7 flex justify-between">
@@ -90,6 +91,16 @@ const Journal = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="flex h-32 items-center justify-center gap-2">
+          <Link href="/journal" className="rounded-full bg-white p-5">
+            <MoveUpRight strokeWidth={1.25} className="text-blacky" />
+          </Link>
+
+          <Link href="/journal" className="underline">
+            journal
+          </Link>
         </div>
       </div>
     </section>
