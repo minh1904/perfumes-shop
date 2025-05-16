@@ -5,7 +5,7 @@ import React from 'react';
 
 const Story = () => {
   return (
-    <div className="pt-18">
+    <div className="pt-18 lg:h-screen">
       {' '}
       <div className="hidden justify-around text-6xl lg:flex">
         {' '}
