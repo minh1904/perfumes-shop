@@ -1,3 +1,4 @@
+import Footer from '@/components/layout/Footer';
 import Discover from '@/components/ui/landingpage/Discover';
 import Hero from '@/components/ui/landingpage/Hero';
 import Journal from '@/components/ui/landingpage/Journal';
@@ -12,6 +13,7 @@ export default function Home() {
       <Discover />
       <Story />
       <Journal />
+      <Footer />
     </div>
   );
 }
