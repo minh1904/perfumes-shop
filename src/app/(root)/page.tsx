@@ -1,4 +1,6 @@
+import Cart from '@/components/layout/Cart';
 import Footer from '@/components/layout/Footer';
+import { Overlay } from '@/components/layout/Overlay';
 import Discover from '@/components/ui/landingpage/Discover';
 import Hero from '@/components/ui/landingpage/Hero';
 import Journal from '@/components/ui/landingpage/Journal';
@@ -14,6 +16,8 @@ export default function Home() {
       <Story />
       <Journal />
       <Footer />
+      <Cart />
+      <Overlay />
     </div>
   );
 }

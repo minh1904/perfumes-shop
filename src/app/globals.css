@@ -136,7 +136,7 @@
   }
 
   .navbar {
-    @apply fixed top-0 left-0 z-9999 flex h-18 w-full items-center justify-between overflow-x-hidden bg-white px-8 md:h-20 md:px-16;
+    @apply fixed top-0 left-0 z-9997 flex h-18 w-full items-center justify-between overflow-x-hidden bg-white px-8 md:h-20 md:px-16;
   }
   .navbar_middle {
     @apply text-blacky hidden space-x-7 text-[0.7rem] uppercase md:block;

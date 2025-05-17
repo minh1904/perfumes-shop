@@ -1,9 +1,12 @@
+'use client';
 import React from 'react';
 import { Menu, Search, ShoppingBasket, UserRound } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useCartStore } from '@/stores';
 
 const Navbar = () => {
+  const { openCart } = useCartStore();
   return (
     <div className="navbar">
       <Menu size={30} strokeWidth={1.25} absoluteStrokeWidth className="md:hidden" />
@@ -28,11 +31,18 @@ const Navbar = () => {
           strokeWidth={1.25}
           absoluteStrokeWidth
           className="cursor-pointer"
+          onClick={openCart}
         />
         <div className="h-4 w-[1px] bg-gray-400"></div>
         <UserRound size={20} strokeWidth={1.25} className="cursor-pointer" />
       </div>
-      <ShoppingBasket size={30} strokeWidth={1.25} absoluteStrokeWidth className="md:hidden" />
+      <ShoppingBasket
+        size={30}
+        strokeWidth={1.25}
+        absoluteStrokeWidth
+        className="cursor-pointer md:hidden"
+        onClick={openCart}
+      />
     </div>
   );
 };
