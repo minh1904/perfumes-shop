@@ -1,13 +1,14 @@
 'use client';
-import { useCartStore } from '@/stores';
+import { useCartStore, useMenuStore } from '@/stores';
 import { MoveRight, X } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 
 const Cart = () => {
-  const { isOpen, closeCart } = useCartStore();
+  const { isOpenCart, closeCart } = useCartStore();
+  const { isOpenMenu } = useMenuStore();
   useEffect(() => {
-    if (isOpen) {
+    if (isOpenCart || isOpenMenu) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -15,10 +16,10 @@ const Cart = () => {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen]);
+  }, [isOpenCart, isOpenMenu]);
   return (
     <div
-      className={`md: fixed top-0 right-0 z-[9999] h-screen w-screen transform bg-white transition-transform duration-500 md:w-[40rem] ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      className={`md: fixed top-0 right-0 z-[9999] h-screen w-screen transform bg-white transition-transform duration-500 md:w-[40rem] ${isOpenCart ? 'translate-x-0' : 'translate-x-full'}`}
     >
       <div className="flex items-center justify-between px-12 py-10 text-5xl">
         <p className="relative font-normal">

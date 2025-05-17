@@ -1,16 +1,17 @@
-// stores/useCartStore.ts
 'use client';
 
 import { create } from 'zustand';
 
 interface CartState {
-  isOpen: boolean;
+  isOpenCart: boolean;
   openCart: () => void;
   closeCart: () => void;
+  toggleCart: () => void;
 }
 
 export const useCartStore = create<CartState>((set) => ({
-  isOpen: false,
-  openCart: () => set({ isOpen: true }),
-  closeCart: () => set({ isOpen: false }),
+  isOpenCart: false,
+  openCart: () => set({ isOpenCart: true }),
+  closeCart: () => set({ isOpenCart: false }),
+  toggleCart: () => set((state) => ({ isOpenCart: !state.isOpenCart })),
 }));

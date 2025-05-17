@@ -1,15 +1,19 @@
 'use client';
 import React from 'react';
-import { Menu, Search, ShoppingBasket, UserRound } from 'lucide-react';
+import { Search, ShoppingBasket, UserRound } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/stores';
+import MenuIcon from '../ui/item/MenuIcon';
 
 const Navbar = () => {
   const { openCart } = useCartStore();
   return (
     <div className="navbar">
-      <Menu size={30} strokeWidth={1.25} absoluteStrokeWidth className="md:hidden" />
+      <div className="md:hidden">
+        <MenuIcon />
+      </div>
+
       <Image
         src="/logo.png"
         alt="Logo ParfumÉlite"

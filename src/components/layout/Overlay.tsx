@@ -3,11 +3,11 @@ import { useCartStore } from '@/stores';
 import React from 'react';
 
 export const Overlay = () => {
-  const { isOpen, closeCart } = useCartStore();
+  const { isOpenCart, closeCart } = useCartStore();
   return (
     <div
       onClick={closeCart}
-      className={`bg-blacky pointer-events-none fixed top-0 left-0 z-[9998] h-screen w-screen duration-500 ${isOpen ? `opacity-50` : `opacity-0`} `}
+      className={`bg-blacky fixed top-0 left-0 z-[9998] hidden h-screen w-screen duration-500 md:block ${isOpenCart ? `pointer-events-auto opacity-50` : `pointer-events-none opacity-0`} `}
     ></div>
   );
 };
