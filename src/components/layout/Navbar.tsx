@@ -4,7 +4,7 @@ import { Search, ShoppingBasket, UserRound } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/stores';
-import MenuIcon from '../ui/item/MenuIcon';
+import MenuIcon from '../ui/MenuIcon';
 
 const Navbar = () => {
   const { openCart } = useCartStore();
@@ -38,15 +38,20 @@ const Navbar = () => {
           onClick={openCart}
         />
         <div className="h-4 w-[1px] bg-gray-400"></div>
-        <UserRound size={20} strokeWidth={1.25} className="cursor-pointer" />
+        <Link href="/login">
+          <UserRound size={20} strokeWidth={1.25} className="cursor-pointer" />
+        </Link>
       </div>
-      <ShoppingBasket
-        size={30}
-        strokeWidth={1.25}
-        absoluteStrokeWidth
-        className="cursor-pointer md:hidden"
-        onClick={openCart}
-      />
+      <div className="flex gap-1.5 md:hidden">
+        <Search size={30} strokeWidth={1.25} className="cursor-pointer" />
+        <ShoppingBasket
+          size={30}
+          strokeWidth={1.25}
+          absoluteStrokeWidth
+          className="cursor-pointer"
+          onClick={openCart}
+        />
+      </div>
     </div>
   );
 };

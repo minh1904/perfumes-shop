@@ -1,8 +1,7 @@
 import { MoveRight } from 'lucide-react';
-import React from 'react';
 
 import Image from 'next/image';
-import ScrollProduct from '../ui/landingpage/ScrollProduct';
+import ScrollProduct from './ScrollProduct';
 
 const Discover = () => {
   interface Product {

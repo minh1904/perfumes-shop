@@ -4,7 +4,7 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Draggable } from 'gsap/Draggable';
 import { InertiaPlugin } from 'gsap/InertiaPlugin';
-import CartProduct from '../item/CartProduct';
+import CartProduct from '../ui/CartProduct';
 
 interface ProductProps {
   products: {
