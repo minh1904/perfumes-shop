@@ -1,9 +1,8 @@
 import { MoveRight } from 'lucide-react';
-
 import Image from 'next/image';
 import ScrollProduct from './ScrollProduct';
 
-const Discover = () => {
+const Discovers = () => {
   interface Product {
     id: string;
     name: string;
@@ -126,7 +125,7 @@ const Discover = () => {
         <div className="flex w-full flex-col justify-between py-5 md:w-1/2 2xl:py-15">
           <div className="flex items-center justify-between px-7">
             <div>
-              <p className="text-4xl font-semibold xl:text-6xl 2xl:text-7xl">Unisex </p>
+              <p className="text-4xl font-semibold xl:text-6xl 2xl:text-7xl">Unisex</p>
               <p className="font-roslindale-medium-italic text-4xl xl:text-6xl 2xl:text-7xl">
                 Scent
               </p>
@@ -148,4 +147,4 @@ const Discover = () => {
   );
 };
 
-export default Discover;
+export default Discovers;
