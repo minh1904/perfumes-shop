@@ -24,16 +24,16 @@ const Menu = () => {
         <Link href="/shop" className="text-6xl font-normal duration-400 hover:translate-x-10">
           Shop
         </Link>
-        <Link href="/shop" className="text-6xl font-normal duration-400 hover:translate-x-10">
+        <Link href="/about" className="text-6xl font-normal duration-400 hover:translate-x-10">
           About
         </Link>
-        <Link href="/shop" className="text-6xl font-normal duration-400 hover:translate-x-10">
+        <Link href="/journal" className="text-6xl font-normal duration-400 hover:translate-x-10">
           Journal
         </Link>
-        <Link href="/shop" className="text-6xl font-normal duration-400 hover:translate-x-10">
+        <Link href="/gallery" className="text-6xl font-normal duration-400 hover:translate-x-10">
           Gallery
         </Link>
-        <Link href="/shop" className="text-6xl font-normal duration-400 hover:translate-x-10">
+        <Link href="/login" className="text-6xl font-normal duration-400 hover:translate-x-10">
           Sign Up/Login
         </Link>
       </div>

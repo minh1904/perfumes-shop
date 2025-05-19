@@ -1,14 +1,35 @@
 'use client';
 import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
 import { signIn } from '@/auth';
-
+import { useForm } from 'react-hook-form';
+import { loginSchema, TloginSchema } from '@/lib/schemas/auth';
 export default function LoginForm({ className, ...props }: React.ComponentProps<'form'>) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<TloginSchema>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  });
+
+  const onSubmit = async (data: TloginSchema) => {
+    console.log(data);
+    reset();
+  };
+
   return (
-    <form className={cn('flex flex-col gap-6', className)} {...props}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={cn('flex flex-col gap-6', className)}
+      {...props}
+    >
       <div className="absolute top-0 left-0 flex w-full items-center justify-between px-15 py-2">
         <Image
           src="/logo.png"
@@ -30,18 +51,31 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
         </p>
       </div>
       <div className="mt-20 grid gap-2">
-        <div className="grid gap-3">
-          <Input className="" id="email" type="email" placeholder="ENTER YOUR EMAIL" required />
+        <div className="relative grid">
+          <Input
+            {...register('email')}
+            className=""
+            id="email"
+            type="email"
+            placeholder="ENTER YOUR EMAIL"
+          />
+          {errors.email && (
+            <p className="absolute -bottom-6 left-2 text-sm text-red-500">{errors.email.message}</p>
+          )}
         </div>
-        <div className="grid gap-3">
-          <div className="flex items-center"></div>
-          <Input id="password" type="password" placeholder="PASSWORD" required />
+        <div className="relative mt-5 grid">
+          <Input {...register('password')} id="password" type="password" placeholder="PASSWORD" />
+          {errors.password && (
+            <p className="absolute -bottom-6 left-2 text-sm text-red-500">
+              {errors.password.message}
+            </p>
+          )}
         </div>
-        <p className="cursor-pointer text-center underline">Forgot Password</p>
+        <p className="mt-7 cursor-pointer text-center underline">Forgot Password</p>
         <div className="grid w-full gap-3 md:grid-cols-2">
           <Button
             variant="outline"
-            className="border-blacky hidden rounded-full py-7 uppercase md:flex"
+            className="border-blacky hidden cursor-pointer rounded-full py-7 uppercase md:flex"
           >
             Login with google
             <svg
@@ -69,7 +103,11 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
               />
             </svg>
           </Button>
-          <Button type="submit" className="rounded-full py-7">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="cursor-pointer rounded-full py-7"
+          >
             LOGIN
           </Button>
           <Button

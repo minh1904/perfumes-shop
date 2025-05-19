@@ -4,10 +4,30 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
+import { signupSchema, TsignupSchema } from '@/lib/schemas/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 
 export default function SignupForm({ className, ...props }: React.ComponentProps<'form'>) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<TsignupSchema>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: { email: '', password: '', name: '' },
+  });
+  const onSubmit = async (data: TsignupSchema) => {
+    console.log(data);
+    reset();
+  };
   return (
-    <form className={cn('flex flex-col gap-6', className)} {...props}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={cn('flex flex-col gap-6', className)}
+      {...props}
+    >
       <div className="absolute top-0 left-0 flex w-full items-center justify-between px-15 py-2">
         <Image
           src="/logo.png"
@@ -22,27 +42,50 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
         </Link>
       </div>
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-7xl font-semibold">Login </h1>
+        <h1 className="text-7xl font-semibold">Sign up </h1>
         <p className="text-muted-foreground text-sm font-normal text-balance">
           By accessing your ParfumÉlite account you can track and manage your orders and also save
           multiple addresses.
         </p>
       </div>
       <div className="mt-20 grid gap-2">
-        <div className="grid gap-3">
-          <Input id="name" type="text" placeholder="FULL NAME" required />
+        <div className="relative grid gap-3">
+          <Input {...register('name')} id="name" type="text" placeholder="FULL NAME" required />
+          {errors.name && (
+            <p className="absolute -bottom-6 left-2 text-sm text-red-500">{errors.name.message}</p>
+          )}
         </div>
-        <div className="grid gap-3">
-          <Input id="email" type="email" placeholder="ENTER YOUR EMAIL" required />
+        <div className="relative mt-5 grid gap-3">
+          <Input
+            {...register('email')}
+            id="email"
+            type="email"
+            placeholder="ENTER YOUR EMAIL"
+            required
+          />
+          {errors.email && (
+            <p className="absolute -bottom-6 left-2 text-sm text-red-500">{errors.email.message}</p>
+          )}
         </div>
-        <div className="grid gap-3">
-          <Input id="password" type="password" placeholder="PASSWORD" required />
+        <div className="relative mt-5 grid gap-3">
+          <Input
+            {...register('password')}
+            id="password"
+            type="password"
+            placeholder="PASSWORD"
+            required
+          />
+          {errors.password && (
+            <p className="absolute -bottom-6 left-2 text-sm text-red-500">
+              {errors.password.message}
+            </p>
+          )}
         </div>
 
         <div className="mt-10 grid w-full gap-3 md:grid-cols-2">
           <Button
             variant="outline"
-            className="border-blacky hidden rounded-full py-7 uppercase md:flex"
+            className="border-blacky hidden cursor-pointer rounded-full py-7 uppercase md:flex"
           >
             Sign up with google
             <svg
@@ -70,7 +113,11 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
               />
             </svg>
           </Button>
-          <Button type="submit" className="rounded-full py-7">
+          <Button
+            disabled={isSubmitting}
+            type="submit"
+            className="cursor-pointer rounded-full py-7"
+          >
             Sign up
           </Button>
           <Button variant="outline" className="border-blacky rounded-full py-7 uppercase md:hidden">
