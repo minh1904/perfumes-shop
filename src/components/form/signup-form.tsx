@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { signupSchema, TsignupSchema } from '@/lib/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { signupUserAction } from '@/actions/signup-user-action';
+import { toast } from 'sonner';
 
 export default function SignupForm({ className, ...props }: React.ComponentProps<'form'>) {
   const {
@@ -14,14 +16,36 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setError,
   } = useForm<TsignupSchema>({
     resolver: zodResolver(signupSchema),
     defaultValues: { email: '', password: '', name: '' },
   });
   const onSubmit = async (data: TsignupSchema) => {
-    console.log(data);
-    reset();
+    const res = await signupUserAction(data);
+
+    if (res.success) {
+      toast.success('Signup Successful :D');
+      reset();
+    } else {
+      switch (res.statusCode) {
+        case 400:
+          Object.entries(res.error).forEach(([field, messages]) => {
+            if (messages && messages.length > 0) {
+              setError(field as keyof TsignupSchema, {
+                type: 'manual',
+                message: messages[0],
+              });
+            }
+          });
+          break;
+        case 500:
+          toast.error(res.error || 'Server error');
+          break;
+      }
+    }
   };
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -48,33 +72,21 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
           multiple addresses.
         </p>
       </div>
-      <div className="mt-20 grid gap-2">
+      <div className="mt-10 grid gap-2">
         <div className="relative grid gap-3">
-          <Input {...register('name')} id="name" type="text" placeholder="FULL NAME" required />
+          <Input {...register('name')} id="name" type="text" placeholder="FULL NAME" />
           {errors.name && (
             <p className="absolute -bottom-6 left-2 text-sm text-red-500">{errors.name.message}</p>
           )}
         </div>
         <div className="relative mt-5 grid gap-3">
-          <Input
-            {...register('email')}
-            id="email"
-            type="email"
-            placeholder="ENTER YOUR EMAIL"
-            required
-          />
+          <Input {...register('email')} id="email" type="email" placeholder="ENTER YOUR EMAIL" />
           {errors.email && (
             <p className="absolute -bottom-6 left-2 text-sm text-red-500">{errors.email.message}</p>
           )}
         </div>
         <div className="relative mt-5 grid gap-3">
-          <Input
-            {...register('password')}
-            id="password"
-            type="password"
-            placeholder="PASSWORD"
-            required
-          />
+          <Input {...register('password')} id="password" type="password" placeholder="PASSWORD" />
           {errors.password && (
             <p className="absolute -bottom-6 left-2 text-sm text-red-500">
               {errors.password.message}

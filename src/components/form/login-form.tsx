@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { signIn } from '@/auth';
 import { useForm } from 'react-hook-form';
 import { loginSchema, TloginSchema } from '@/lib/schemas/auth';
+import { loginUserAction } from '@/actions/login-user-action';
+import { toast } from 'sonner';
 export default function LoginForm({ className, ...props }: React.ComponentProps<'form'>) {
   const {
     register,
@@ -20,8 +22,14 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
   });
 
   const onSubmit = async (data: TloginSchema) => {
-    console.log(data);
-    reset();
+    const res = await loginUserAction(data);
+
+    if (res.success) {
+      toast.success('Thanks for login');
+      reset();
+    } else {
+      console.log('Something is wrong');
+    }
   };
 
   return (
@@ -50,15 +58,9 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
           multiple addresses.
         </p>
       </div>
-      <div className="mt-20 grid gap-2">
+      <div className="mt-10 grid gap-2">
         <div className="relative grid">
-          <Input
-            {...register('email')}
-            className=""
-            id="email"
-            type="email"
-            placeholder="ENTER YOUR EMAIL"
-          />
+          <Input {...register('email')} id="email" type="email" placeholder="ENTER YOUR EMAIL" />
           {errors.email && (
             <p className="absolute -bottom-6 left-2 text-sm text-red-500">{errors.email.message}</p>
           )}
