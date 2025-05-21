@@ -1,4 +1,10 @@
-CREATE TYPE "public"."role" AS ENUM('user', 'admin');--> statement-breakpoint
+
+DO $$ 
+BEGIN
+    CREATE TYPE "role" AS ENUM('user', 'admin');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 CREATE TABLE "account" (
 	"userId" text NOT NULL,
 	"type" text NOT NULL,
@@ -47,8 +53,6 @@ CREATE TABLE "verificationToken" (
 	"expires" timestamp NOT NULL
 );
 --> statement-breakpoint
-DROP TABLE "posts_table" CASCADE;--> statement-breakpoint
-DROP TABLE "users_table" CASCADE;--> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "authenticator" ADD CONSTRAINT "authenticator_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

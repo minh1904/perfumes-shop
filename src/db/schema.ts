@@ -1,4 +1,5 @@
 import { sql, SQL } from 'drizzle-orm';
+
 import {
   boolean,
   timestamp,
@@ -7,7 +8,7 @@ import {
   primaryKey,
   integer,
   pgEnum,
-  AnyPgColumn,
+  type AnyPgColumn,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
 
@@ -22,15 +23,13 @@ export const users = pgTable(
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     name: text('name'),
-    email: text('email').notNull(),
+    email: text('email').unique(),
     emailVerified: timestamp('emailVerified', { mode: 'date' }),
     image: text('image'),
     password: text('password'),
     role: roleEnum('role').notNull().default('user'),
   },
-  (table) => ({
-    emailUniqueIndex: uniqueIndex('emailUniqueIndex').on(lower(table.email)),
-  }),
+  (table) => [uniqueIndex('emailUniqueIndex').on(lower(table.email))],
 );
 
 export function lower(email: AnyPgColumn): SQL {

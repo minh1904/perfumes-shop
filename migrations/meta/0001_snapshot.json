@@ -1,6 +1,6 @@
 {
-  "id": "9f135013-74f4-461b-a816-aa518933f1c6",
-  "prevId": "94ea02db-93eb-4246-a5af-8de08823e1d2",
+  "id": "864ba96e-8ecb-4c76-b2ed-8e08505c9f62",
+  "prevId": "24f9fd76-4614-4838-b2dd-056509a914e6",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -274,23 +274,7 @@
           "default": "'user'"
         }
       },
-      "indexes": {
-        "emailUniqueIndex": {
-          "name": "emailUniqueIndex",
-          "columns": [
-            {
-              "expression": "lower(\"email\")",
-              "asc": true,
-              "isExpression": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
