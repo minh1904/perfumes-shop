@@ -9,13 +9,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { signupUserAction } from '@/actions/signup-user-action';
 import { toast } from 'sonner';
-
 export default function SignupForm({ className, ...props }: React.ComponentProps<'form'>) {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
+
     setError,
   } = useForm<TsignupSchema>({
     resolver: zodResolver(signupSchema),
@@ -25,8 +24,7 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
     const res = await signupUserAction(data);
 
     if (res.success) {
-      toast.success('Signup Successful :D');
-      reset();
+      toast.success('Sign up Successfully please loign :D');
     } else {
       switch (res.statusCode) {
         case 400:
@@ -38,6 +36,9 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
               });
             }
           });
+          break;
+        case 409:
+          toast.error(res.error || 'Email is already exists');
           break;
         case 500:
           toast.error(res.error || 'Server error');
