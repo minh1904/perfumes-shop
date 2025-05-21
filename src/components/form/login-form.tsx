@@ -1,4 +1,5 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -14,21 +15,25 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
     setError,
   } = useForm<TloginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
 
+  const router = useRouter();
+
   const onSubmit = async (data: TloginSchema) => {
     const res = await loginUserAction(data);
 
     if (res.success) {
       toast.success('Thanks for login');
-      reset();
+      router.push('/');
     } else {
       switch (res.statusCode) {
+        case 401:
+          setError('password', { message: res.error });
+          break;
         case 500:
         default:
           const error = res.error || 'Internal Server Error';
