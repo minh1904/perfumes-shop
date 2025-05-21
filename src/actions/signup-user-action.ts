@@ -1,4 +1,6 @@
 'use server';
+import { db } from '@/db/db';
+import { users } from '@/db/schema';
 import { signupSchema } from '@/lib/schemas/auth';
 import * as argon2 from 'argon2';
 type FieldErrors = {
@@ -27,6 +29,12 @@ export async function signupUserAction(data: unknown): Promise<Res> {
     console.log({ name, email, password: hashedPassword });
 
     //Save user to db
+    const newUser = await db
+      .insert(users)
+      .values({ name, email, password: hashedPassword })
+      .returning({ id: users.id })
+      .then((res) => res[0]);
+    console.log(newUser);
 
     return { success: true };
   } catch (err) {
