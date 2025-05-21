@@ -13,10 +13,10 @@ export async function loginUserAction(data: unknown): Promise<Res> {
     }
 
     await signIn('credentials', { ...data, redirect: false });
+
     return { success: true };
   } catch (err) {
     console.log(err);
     return { success: false, error: 'Internal Server Error', statusCode: 500 };
   }
-  return { success: true };
 }
