@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
-import { signIn } from '@/auth';
 import { useForm } from 'react-hook-form';
 import { loginSchema, TloginSchema } from '@/lib/schemas/auth';
 import { loginUserAction } from '@/actions/login-user-action';
@@ -112,11 +111,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
           >
             LOGIN
           </Button>
-          <Button
-            onClick={() => signIn('google', { callbackUrl: '/' })}
-            variant="outline"
-            className="border-blacky rounded-full py-7 uppercase md:hidden"
-          >
+          <Button variant="outline" className="border-blacky rounded-full py-7 uppercase md:hidden">
             Login with google{' '}
             <svg
               width="256"
