@@ -15,6 +15,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setError,
   } = useForm<TloginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
@@ -27,7 +28,12 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
       toast.success('Thanks for login');
       reset();
     } else {
-      console.log('Something is wrong');
+      switch (res.statusCode) {
+        case 500:
+        default:
+          const error = res.error || 'Internal Server Error';
+          setError('password', { message: error });
+      }
     }
   };
 
