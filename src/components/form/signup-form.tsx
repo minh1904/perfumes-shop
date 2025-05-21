@@ -24,7 +24,7 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
     const res = await signupUserAction(data);
 
     if (res.success) {
-      toast.success('Sign up Successfully please loign :D');
+      toast.success('Sign up Successfully please login :D');
     } else {
       switch (res.statusCode) {
         case 400:
@@ -38,7 +38,7 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
           });
           break;
         case 409:
-          toast.error(res.error || 'Email is already exists');
+          toast.error(res.error || 'Email already exists');
           break;
         case 500:
           toast.error(res.error || 'Server error');

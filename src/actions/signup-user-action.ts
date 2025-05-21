@@ -1,8 +1,10 @@
 'use server';
 import { db } from '@/db/db';
-import { users } from '@/db/schema';
+import { lower, users } from '@/db/schema';
 import { signupSchema } from '@/lib/schemas/auth';
 import * as argon2 from 'argon2';
+import { eq } from 'drizzle-orm';
+
 type FieldErrors = {
   name?: string[] | undefined;
   email?: string[] | undefined;
@@ -12,7 +14,7 @@ type FieldErrors = {
 type Res =
   | { success: true; data?: unknown }
   | { success: false; error: FieldErrors; statusCode: 400 }
-  | { success: false; error: string; statusCode: 500 };
+  | { success: false; error: string; statusCode: 409 | 500 };
 
 export async function signupUserAction(data: unknown): Promise<Res> {
   const parsedValues = signupSchema.safeParse(data);
@@ -22,6 +24,20 @@ export async function signupUserAction(data: unknown): Promise<Res> {
     return { success: false, error: flatErrors.fieldErrors, statusCode: 400 };
   }
   const { name, email, password } = parsedValues.data;
+
+  try {
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(lower(users.email), email.toLowerCase()))
+      .then((res) => res[0] ?? null);
+    if (existingUser?.id) {
+      return { success: false, error: 'Email already exists', statusCode: 409 };
+    }
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: 'Internal Server error', statusCode: 500 };
+  }
 
   try {
     //Hash password
