@@ -6,7 +6,7 @@ import { loginSchema } from '@/lib/schemas/auth';
 import { findUserByEmail } from '@/resources/user-queries';
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: 'jwt' },
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   pages: { signIn: '/login' },
   providers: [
     Google({
