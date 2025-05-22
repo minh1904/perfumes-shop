@@ -17,6 +17,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           response_type: 'code',
         },
       },
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
     Credentials({
       async authorize(credentials) {

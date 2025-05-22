@@ -131,6 +131,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
           </Button>
           <Button
             type="button"
+            onClick={clickHandle.bind(null, 'google')}
             variant="outline"
             className="border-blacky cursor-pointer rounded-full py-7 uppercase md:hidden"
           >
