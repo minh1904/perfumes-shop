@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
+import Providers from '@/components/ui/providers';
 
 const generalSans = localFont({
   src: [
@@ -57,7 +59,10 @@ export default function RootLayout({
       <body
         className={`${generalSans.variable} ${roslindaleItalic.variable} ${roslindaleMediumItalic.variable} antialiased`}
       >
-        {children}
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

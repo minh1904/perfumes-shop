@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { loginSchema, TloginSchema } from '@/lib/schemas/auth';
 import { loginUserAction } from '@/actions/login-user-action';
 import { toast } from 'sonner';
+import { oauthLoginAction } from '@/actions/oauth-login-action';
 export default function LoginForm({ className, ...props }: React.ComponentProps<'form'>) {
   const {
     register,
@@ -20,6 +21,10 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
+
+  const clickHandle = async (provider: 'google') => {
+    await oauthLoginAction(provider);
+  };
 
   const router = useRouter();
 
@@ -86,6 +91,8 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
         <p className="mt-7 cursor-pointer text-center underline">Forgot Password</p>
         <div className="grid w-full gap-3 md:grid-cols-2">
           <Button
+            type="button"
+            onClick={clickHandle.bind(null, 'google')}
             variant="outline"
             className="border-blacky hidden cursor-pointer rounded-full py-7 uppercase md:flex"
           >
@@ -122,7 +129,11 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
           >
             LOGIN
           </Button>
-          <Button variant="outline" className="border-blacky rounded-full py-7 uppercase md:hidden">
+          <Button
+            type="button"
+            variant="outline"
+            className="border-blacky cursor-pointer rounded-full py-7 uppercase md:hidden"
+          >
             Login with google{' '}
             <svg
               width="256"

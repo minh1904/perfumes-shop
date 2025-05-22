@@ -9,17 +9,22 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { signupUserAction } from '@/actions/signup-user-action';
 import { toast } from 'sonner';
+import { oauthLoginAction } from '@/actions/oauth-login-action';
 export default function SignupForm({ className, ...props }: React.ComponentProps<'form'>) {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-
     setError,
   } = useForm<TsignupSchema>({
     resolver: zodResolver(signupSchema),
     defaultValues: { email: '', password: '', name: '' },
   });
+
+  const clickHandle = async (provider: 'google') => {
+    await oauthLoginAction(provider);
+  };
+
   const onSubmit = async (data: TsignupSchema) => {
     const res = await signupUserAction(data);
 
@@ -97,6 +102,8 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
 
         <div className="mt-10 grid w-full gap-3 md:grid-cols-2">
           <Button
+            type="button"
+            onClick={clickHandle.bind(null, 'google')}
             variant="outline"
             className="border-blacky hidden cursor-pointer rounded-full py-7 uppercase md:flex"
           >
@@ -133,8 +140,13 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
           >
             Sign up
           </Button>
-          <Button variant="outline" className="border-blacky rounded-full py-7 uppercase md:hidden">
-            Login with google{' '}
+          <Button
+            type="button"
+            onClick={clickHandle.bind(null, 'google')}
+            variant="outline"
+            className="border-blacky cursor-pointer rounded-full py-7 uppercase md:hidden"
+          >
+            Sign up with google
             <svg
               width="256"
               height="262"

@@ -1,11 +1,17 @@
 'use client';
 
+import { signoutUserAction } from '@/actions/sign-out-action';
 import { useMenuStore } from '@/stores';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 
 const Menu = () => {
   const { isOpenMenu } = useMenuStore();
+
+  const clickHandle = async () => {
+    await signoutUserAction();
+  };
+
   useEffect(() => {
     if (isOpenMenu) {
       document.body.style.overflow = 'hidden';
@@ -33,12 +39,15 @@ const Menu = () => {
         <Link href="/gallery" className="text-6xl font-normal duration-400 hover:translate-x-10">
           Gallery
         </Link>
+
         <Link href="/login" className="text-6xl font-normal duration-400 hover:translate-x-10">
           Sign Up/Login
         </Link>
       </div>
       <div className="mb-10 flex flex-col gap-0.5 px-7 lg:hidden">
-        <div className="text-gray-500">CONTACT US</div>
+        <div className="text-gray-500" onClick={clickHandle}>
+          CONTACT US
+        </div>
         <p className="font-semibold">pe@parfumelite.com</p>
         <p className="font-semibold">0000 - 1111 - 2222 </p>
       </div>
