@@ -16,6 +16,7 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
+    reset,
   } = useForm<TsignupSchema>({
     resolver: zodResolver(signupSchema),
     defaultValues: { email: '', password: '', name: '' },
@@ -29,6 +30,7 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
     const res = await signupUserAction(data);
 
     if (res.success) {
+      reset();
       toast.success('Sign up Successfully please login :D');
     } else {
       switch (res.statusCode) {

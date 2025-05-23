@@ -23,7 +23,13 @@ const CartProduct = ({ products, bgColor }: ProductProps) => {
         <PackagePlus strokeWidth={1.25} />
       </div>
       <div>
-        <Image src={`${products.image}`} alt={products.name} width={500} height={500} />
+        <Image
+          src={`${products.image}`}
+          alt={products.name}
+          width={500}
+          height={500}
+          className="cursor-pointer duration-400 hover:scale-125"
+        />
       </div>
       <div className="flex justify-between">
         <p>{products.name}</p>

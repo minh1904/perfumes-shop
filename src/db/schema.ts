@@ -10,6 +10,11 @@ import {
   pgEnum,
   type AnyPgColumn,
   uniqueIndex,
+  serial,
+  varchar,
+  doublePrecision,
+  decimal,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 
 import type { AdapterAccountType } from 'next-auth/adapters';
@@ -107,3 +112,112 @@ export const authenticators = pgTable(
     },
   ],
 );
+
+export const brands = pgTable('brands', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
+  description: text('description'),
+  logo_url: text('logo_url'),
+  created_at: timestamp('created_at').defaultNow(),
+});
+
+export const categories = pgTable('categories', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
+  created_at: timestamp('created_at').defaultNow(),
+});
+
+export const products = pgTable('products', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+  slug: text('slug').unique().notNull(),
+  brand_id: integer('brand_id')
+    .references(() => brands.id)
+    .notNull(),
+  category_id: integer('category_id').references(() => categories.id),
+  price: decimal('price', { precision: 10, scale: 2 }).notNull(),
+  discount: doublePrecision('discount').default(0),
+  short_description: text('short_description'),
+  description: jsonb('description'),
+  gender: varchar('gender', { length: 10 }),
+  top_notes: text('top_notes'),
+  middle_notes: text('middle_notes'),
+  base_notes: text('base_notes'),
+  status: boolean('status').default(true),
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow(),
+});
+
+export const productVariants = pgTable('product_variants', {
+  id: serial('id').primaryKey(),
+  product_id: integer('product_id')
+    .references(() => products.id)
+    .notNull(),
+  volume_ml: integer('volume_ml').notNull(),
+  sku: text('sku').unique().notNull(),
+  price: decimal('price', { precision: 10, scale: 2 }).notNull(),
+  stock: integer('stock').notNull().default(0),
+});
+
+export const images = pgTable('images', {
+  id: serial('id').primaryKey(),
+  product_id: integer('product_id')
+    .references(() => products.id)
+    .notNull(),
+  url: text('url').notNull(),
+  alt_text: text('alt_text'),
+  is_primary: boolean('is_primary').default(false),
+});
+
+export const reviews = pgTable('reviews', {
+  id: serial('id').primaryKey(),
+  user_id: integer('user_id').notNull(),
+  product_id: integer('product_id')
+    .references(() => products.id)
+    .notNull(),
+  rating: integer('rating').notNull(), // 1-5
+  comment: text('comment'),
+  created_at: timestamp('created_at').defaultNow(),
+});
+
+export const cartItems = pgTable('cart_items', {
+  id: serial('id').primaryKey(),
+  user_id: integer('user_id').notNull(),
+  variant_id: integer('variant_id')
+    .references(() => productVariants.id)
+    .notNull(),
+  quantity: integer('quantity').default(1).notNull(),
+  added_at: timestamp('added_at').defaultNow(),
+});
+
+export const orders = pgTable('orders', {
+  id: serial('id').primaryKey(),
+  user_id: integer('user_id').notNull(),
+  status: text('status').default('pending'), // pending, paid, shipped, delivered
+  total_amount: decimal('total_amount', { precision: 10, scale: 2 }),
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow(),
+});
+
+export const orderItems = pgTable('order_items', {
+  id: serial('id').primaryKey(),
+  order_id: integer('order_id')
+    .references(() => orders.id)
+    .notNull(),
+  variant_id: integer('variant_id')
+    .references(() => productVariants.id)
+    .notNull(),
+  quantity: integer('quantity').notNull(),
+  price_each: decimal('price_each', { precision: 10, scale: 2 }),
+});
+
+export const wishlists = pgTable('wishlists', {
+  id: serial('id').primaryKey(),
+  user_id: integer('user_id').notNull(),
+  product_id: integer('product_id')
+    .references(() => products.id)
+    .notNull(),
+  created_at: timestamp('created_at').defaultNow(),
+});

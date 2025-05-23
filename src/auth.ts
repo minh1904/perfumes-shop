@@ -4,10 +4,42 @@ import Credentials from 'next-auth/providers/credentials';
 import * as argon2 from 'argon2';
 import { loginSchema } from '@/lib/schemas/auth';
 import { findUserByEmail } from '@/resources/user-queries';
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
+import * as schema from '@/db/schema';
+import { db } from './db/db';
+import { oauthVerifyEmailAction } from './actions/oauth-verify-email-action';
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: DrizzleAdapter(db, {
+    accountsTable: schema.accounts,
+    usersTable: schema.users,
+    authenticatorsTable: schema.authenticators,
+    sessionsTable: schema.sessions,
+    verificationTokensTable: schema.verificationTokens,
+  }),
   session: { strategy: 'jwt' },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
   pages: { signIn: '/login' },
+  callbacks: {
+    jwt({ token, user }) {
+      if (user?.id) token.id = user.id;
+      if (user?.role) token.role = user.role;
+      return token;
+    },
+    session({ session, token }) {
+      session.user.id = token.id;
+      session.user.role = token.role;
+      return session;
+    },
+  },
+  events: {
+    async linkAccount({ user, account }) {
+      if (['google'].includes(account.provider)) {
+        if (user.email) await oauthVerifyEmailAction(user.email);
+      }
+    },
+  },
+
   providers: [
     Google({
       authorization: {
@@ -20,6 +52,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
+
     Credentials({
       async authorize(credentials) {
         const parsedCredentials = loginSchema.safeParse(credentials);

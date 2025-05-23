@@ -3,11 +3,12 @@ import React from 'react';
 import { Search, ShoppingBasket, UserRound } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCartStore } from '@/stores';
+import { useCartStore, useSearchStore } from '@/stores';
 import MenuIcon from '../ui/MenuIcon';
 
 const Navbar = () => {
   const { openCart } = useCartStore();
+  const { openSearch } = useSearchStore();
   return (
     <div className="navbar">
       <div className="md:hidden">
@@ -24,12 +25,12 @@ const Navbar = () => {
       />
       <div className="navbar_middle">
         <Link href="/shop">shop</Link>
-        <Link href="/shop">about</Link>
-        <Link href="/shop">journal</Link>
-        <Link href="/shop">gallery</Link>
+        <Link href="/about">about</Link>
+        <Link href="/journal">journal</Link>
+        <Link href="/gallery">gallery</Link>
       </div>
       <div className="navbar_right">
-        <Search size={20} strokeWidth={1.25} className="cursor-pointer" />
+        <Search onClick={openSearch} size={20} strokeWidth={1.25} className="cursor-pointer" />
         <ShoppingBasket
           size={20}
           strokeWidth={1.25}
@@ -43,7 +44,7 @@ const Navbar = () => {
         </Link>
       </div>
       <div className="flex gap-1.5 md:hidden">
-        <Search size={30} strokeWidth={1.25} className="cursor-pointer" />
+        <Search onClick={openSearch} size={30} strokeWidth={1.25} className="cursor-pointer" />
         <ShoppingBasket
           size={30}
           strokeWidth={1.25}

@@ -1,46 +1,15 @@
 import { MoveRight } from 'lucide-react';
 import Image from 'next/image';
 import ScrollProduct from './ScrollProduct';
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  type: string;
+  image: string | null;
+}
 
 const Discovers = () => {
-  interface Product {
-    id: string;
-    name: string;
-    price: number;
-    type: string;
-    image: string | null;
-  }
-
-  const products: Product[] = [
-    {
-      id: 'product-001',
-      name: 'Creed Viking EDP',
-      price: 345,
-      type: 'Creed',
-      image: 'https://res.cloudinary.com/ddsnh547w/image/upload/v1747235751/download_1_rdmwy4.png',
-    },
-    {
-      id: 'product-002',
-      name: 'Bleu de Chanel Parfum',
-      price: 165,
-      type: 'Chanel',
-      image: 'https://res.cloudinary.com/ddsnh547w/image/upload/v1747235751/download_1_rdmwy4.png',
-    },
-    {
-      id: 'product-003',
-      name: 'Dior Sauvage Elixir',
-      price: 180,
-      type: 'Dior',
-      image: 'https://res.cloudinary.com/ddsnh547w/image/upload/v1747235751/download_1_rdmwy4.png',
-    },
-    {
-      id: 'product-004',
-      name: 'Tom Ford Oud Wood EDP',
-      price: 250,
-      type: 'Tom Ford',
-      image: 'https://res.cloudinary.com/ddsnh547w/image/upload/v1747235751/download_1_rdmwy4.png',
-    },
-  ];
   return (
     <section className="discover-section my-10">
       <div className="mb-10 text-center">
@@ -148,3 +117,34 @@ const Discovers = () => {
 };
 
 export default Discovers;
+
+export const products: Product[] = [
+  {
+    id: 'product-001',
+    name: 'Creed Viking EDP',
+    price: 345,
+    type: 'Creed ádasdaádasdasds',
+    image: 'https://res.cloudinary.com/ddsnh547w/image/upload/v1747235751/download_1_rdmwy4.png',
+  },
+  {
+    id: 'product-002',
+    name: 'Bleu de Chanel Parfum',
+    price: 165,
+    type: 'Chanel',
+    image: 'https://res.cloudinary.com/ddsnh547w/image/upload/v1747235751/download_1_rdmwy4.png',
+  },
+  {
+    id: 'product-003',
+    name: 'Dior Sauvage Elixir',
+    price: 180,
+    type: 'Dior',
+    image: 'https://res.cloudinary.com/ddsnh547w/image/upload/v1747235751/download_1_rdmwy4.png',
+  },
+  {
+    id: 'product-004',
+    name: 'Tom Ford Oud Wood EDP',
+    price: 250,
+    type: 'Tom Ford',
+    image: 'https://res.cloudinary.com/ddsnh547w/image/upload/v1747235751/download_1_rdmwy4.png',
+  },
+];
