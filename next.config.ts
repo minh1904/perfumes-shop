@@ -4,7 +4,12 @@ const nextConfig: NextConfig = {
   /* config options here */
   transpilePackages: ['gsap'],
   images: {
-    domains: ['res.cloudinary.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*',
+      },
+    ],
   },
   reactStrictMode: true,
   env: {

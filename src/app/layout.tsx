@@ -3,6 +3,8 @@ import localFont from 'next/font/local';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import Providers from '@/components/ui/providers';
+import { Suspense } from 'react';
+import QueryProvider from './proivder';
 
 const generalSans = localFont({
   src: [
@@ -59,10 +61,15 @@ export default function RootLayout({
       <body
         className={`${generalSans.variable} ${roslindaleItalic.variable} ${roslindaleMediumItalic.variable} antialiased`}
       >
-        <Providers>
-          {children}
-          <Toaster />
-        </Providers>
+        <Suspense fallback={<div>...Loading</div>}>
+          <QueryProvider>
+            {' '}
+            <Providers>
+              {children}
+              <Toaster />
+            </Providers>
+          </QueryProvider>
+        </Suspense>
       </body>
     </html>
   );
