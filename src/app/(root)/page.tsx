@@ -1,7 +1,3 @@
-import Cart from '@/components/layout/Cart';
-import Footer from '@/components/layout/Footer';
-import Menu from '@/components/layout/Menu';
-import { Overlay } from '@/components/layout/Overlay';
 import Hero from '@/components/landingpage/Hero';
 import Journal from '@/components/landingpage/Journal';
 import Pledge from '@/components/landingpage/Pledge';
@@ -16,10 +12,6 @@ export default function Home() {
       <Discovers />
       <Story />
       <Journal />
-      <Footer />
-      <Cart />
-      <Overlay />
-      <Menu />
     </div>
   );
 }

@@ -10,17 +10,17 @@ export async function GET() {
         id: products.id,
         name: products.name,
         slug: products.slug,
-        brand: brands.name, // Lấy tên hãng từ bảng brands
+        brand: brands.name,
         price: products.price,
         gender: products.gender,
         short_description: products.short_description,
-        image_url: images.url, // Lấy URL ảnh chính
+        image_url: images.url,
         image_alt: images.alt_text,
       })
       .from(products)
-      .leftJoin(brands, eq(products.brand_id, brands.id)) // Join với bảng brands để lấy tên hãng
-      .leftJoin(images, eq(images.product_id, products.id)) // Join với bảng images
-      .where(eq(images.is_primary, true)) // Chỉ lấy ảnh chính
+      .leftJoin(brands, eq(products.brand_id, brands.id))
+      .leftJoin(images, eq(images.product_id, products.id))
+      .where(eq(images.is_primary, true))
       .limit(100);
 
     return NextResponse.json({ products: Products });

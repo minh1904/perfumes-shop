@@ -1,4 +1,5 @@
 import Cart from '@/components/layout/Cart';
+import FilternSort from '@/components/layout/FilternSort';
 import Footer from '@/components/layout/Footer';
 import Menu from '@/components/layout/Menu';
 import Navbar from '@/components/layout/Navbar';
@@ -7,13 +8,15 @@ import Search from '@/components/layout/Search';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main>
+    <main className="relative">
       <Navbar />
       <Search />
       <Cart />
       <Overlay />
       <Menu />
+      <FilternSort />
       <div>{children}</div>
+
       <Footer />
     </main>
   );

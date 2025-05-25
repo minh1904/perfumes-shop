@@ -48,7 +48,7 @@ const PopularProduct: PopularProduct[] = [
   { name: 'Mad n', id: 6, link: '/' },
 ];
 
-type Product = {
+export type Product = {
   id: number;
   name: string;
   slug: string;
@@ -74,7 +74,7 @@ const Search = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['popularProducts'],
+    queryKey: ['searchbarProducts'],
     queryFn: fetchPopularProducts,
   });
 
@@ -93,7 +93,7 @@ const Search = () => {
 
   const searchResults = useMemo(() => {
     if (!fuse || !searchTerm) return [];
-    return fuse.search(searchTerm).slice(0, 6); // Lấy 3 kết quả đầu
+    return fuse.search(searchTerm).slice(0, 6);
   }, [fuse, searchTerm]);
 
   useEffect(() => {
