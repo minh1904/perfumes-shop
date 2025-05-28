@@ -16,6 +16,7 @@ export async function GET() {
         short_description: products.short_description,
         image_url: images.url,
         image_alt: images.alt_text,
+        sale_count: products.sale_count,
       })
       .from(products)
       .leftJoin(brands, eq(products.brand_id, brands.id))

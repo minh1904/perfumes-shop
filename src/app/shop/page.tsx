@@ -1,11 +1,4 @@
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
@@ -14,18 +7,11 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import {
-  ArrowDown10,
-  ArrowDownUp,
-  ArrowDownWideNarrow,
-  ArrowDownZA,
-  ArrowUp10,
-  ArrowUpWideNarrow,
-  ArrowUpZA,
-} from 'lucide-react';
+import { ArrowDownUp } from 'lucide-react';
 import React from 'react';
 import Image from 'next/image';
 import { getFilterOptions, getProducts } from '@/actions/load-product';
+import SortComponent from '@/components/ui/sort';
 
 interface SearchParams {
   page?: string;
@@ -135,31 +121,7 @@ const Page = async ({ searchParams }: Props) => {
               <ArrowDownUp size={18} strokeWidth={1.25} /> Filter & Sort
             </p>
             <div className="hidden lg:block">
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sort" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="name_asc">
-                    Name: A to Z <ArrowUpZA size={32} strokeWidth={1.25} />
-                  </SelectItem>
-                  <SelectItem value="name_desc">
-                    Name: Z to A <ArrowDownZA size={32} strokeWidth={1.25} />
-                  </SelectItem>
-                  <SelectItem value="price_asc">
-                    Price: Low to High <ArrowUp10 size={32} strokeWidth={1.25} />
-                  </SelectItem>
-                  <SelectItem value="price_desc">
-                    Price: High to Low <ArrowDown10 size={32} strokeWidth={1.25} />
-                  </SelectItem>
-                  <SelectItem value="most_popular">
-                    Most Popular <ArrowDownWideNarrow size={32} strokeWidth={1.25} />
-                  </SelectItem>
-                  <SelectItem value="least_popular">
-                    Least Popular <ArrowUpWideNarrow size={32} strokeWidth={1.25} />
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <SortComponent currentSort={params.sortBy} className="ml-auto" />
             </div>
           </div>
 

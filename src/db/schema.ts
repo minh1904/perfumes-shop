@@ -15,6 +15,7 @@ import {
   doublePrecision,
   decimal,
   jsonb,
+  numeric,
 } from 'drizzle-orm/pg-core';
 
 import type { AdapterAccountType } from 'next-auth/adapters';
@@ -148,6 +149,7 @@ export const products = pgTable('products', {
   status: boolean('status').default(true),
   created_at: timestamp('created_at').defaultNow(),
   updated_at: timestamp('updated_at').defaultNow(),
+  sale_count: numeric('sale_count').default('0'),
 });
 
 export const productVariants = pgTable('product_variants', {

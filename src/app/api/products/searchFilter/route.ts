@@ -54,11 +54,11 @@ export async function GET(request: NextRequest) {
       case 'price_desc':
         orderByClause = [desc(products.price)];
         break;
-      case 'brand_asc':
-        orderByClause = [asc(brands.name)];
+      case 'sale_asc':
+        orderByClause = [asc(products.sale_count)];
         break;
-      case 'brand_desc':
-        orderByClause = [desc(brands.name)];
+      case 'sale_asc':
+        orderByClause = [desc(products.sale_count)];
         break;
       default:
         orderByClause = [desc(products.created_at)];
@@ -82,6 +82,7 @@ export async function GET(request: NextRequest) {
         discount: products.discount,
         short_description: products.short_description,
         gender: products.gender,
+        sale_count: products.sale_count,
         status: products.status,
         created_at: products.created_at,
         // Brand fields
