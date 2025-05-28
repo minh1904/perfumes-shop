@@ -61,7 +61,7 @@ export type Product = {
 };
 
 const fetchPopularProducts = async () => {
-  const response = await axios.get('/api/products');
+  const response = await axios.get('/api/products/searchAll');
   if (response.status !== 200) throw new Error('Failed to fetch products');
   return response.data.products as Product[];
 };

@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Select,
   SelectContent,
@@ -7,6 +5,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import {
   ArrowDown10,
   ArrowDownUp,
@@ -16,44 +23,75 @@ import {
   ArrowUpWideNarrow,
   ArrowUpZA,
 } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
-import Fuse from 'fuse.js';
+import React from 'react';
 import Image from 'next/image';
-import { useFilterStore } from '@/stores';
-import { brand, gender } from '@/components/layout/FilternSort';
-import axios from 'axios';
-import { Product } from '@/components/layout/Search';
-import { useQuery } from '@tanstack/react-query';
+import { getFilterOptions, getProducts } from '@/actions/load-product';
 
-const Page = () => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const { openFilter } = useFilterStore();
-  console.log(searchTerm);
-  const fetchProducts = async () => {
-    const response = await axios.get('../api/products');
-    if (response.status !== 200) throw new Error('Failed to fetch products');
-    return response.data.products as Product[];
+interface SearchParams {
+  page?: string;
+  search?: string;
+  gender?: string;
+  brand?: string;
+  sortBy?: string;
+}
+
+interface Props {
+  searchParams: SearchParams;
+}
+
+const Page = async ({ searchParams }: Props) => {
+  // Convert searchParams to the right format
+  const searchParamss = await searchParams;
+  const params = {
+    page: parseInt(searchParamss.page || '1'),
+    search: searchParamss.search || '',
+    gender: searchParamss.gender || '',
+    brand: searchParamss.brand || '',
+    sortBy: searchParamss.sortBy || '',
   };
 
-  const { data: products } = useQuery({
-    queryKey: ['searchbarProducts'],
-    queryFn: fetchProducts,
-  });
+  // Fetch data và filter options parallel
+  const [data, filterOptions] = await Promise.all([getProducts(params), getFilterOptions()]);
 
-  const fuse = useMemo(() => {
-    if (!products) return null;
-    return new Fuse(products, {
-      keys: [{ name: 'name', weight: 0.6 }],
-      threshold: 0.4,
-    });
-  }, [products]);
+  const { products, pagination } = data;
 
-  const searchResults = useMemo(() => {
-    if (!products) return [];
-    if (!searchTerm) return products.map((product) => ({ item: product }));
-    if (!fuse) return [];
-    return fuse.search(searchTerm).slice(0, 6);
-  }, [fuse, searchTerm, products]);
+  // Hàm tạo URL cho pagination
+  const createPageUrl = (pageNumber: number) => {
+    const params = new URLSearchParams(searchParamss as Record<string, string>);
+    params.set('page', pageNumber.toString());
+    return `?${params.toString()}`;
+  };
+
+  // Hàm lấy các trang hiển thị
+  const getVisiblePages = () => {
+    const delta = 2;
+    const range = [];
+    for (
+      let i = Math.max(2, pagination.currentPage - delta);
+      i <= Math.min(pagination.totalPages - 1, pagination.currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    const rangeWithDots: (number | string)[] = [];
+    if (pagination.currentPage - delta > 2) {
+      rangeWithDots.push(1, '...');
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (pagination.currentPage + delta < pagination.totalPages - 1) {
+      rangeWithDots.push('...', pagination.totalPages);
+    } else if (pagination.totalPages > 1) {
+      rangeWithDots.push(pagination.totalPages);
+    }
+
+    return rangeWithDots;
+  };
+
   return (
     <div className="min-h-screen max-w-full overflow-x-hidden">
       <div className="w-full lg:flex">
@@ -62,12 +100,9 @@ const Page = () => {
           <div>
             <p className="text-[16px] font-semibold">Gender</p>
             <div className="mt-2 flex flex-wrap gap-3">
-              {gender.map((item) => (
-                <p
-                  className="border-blacky cursor-pointer rounded-sm border px-3 py-1"
-                  key={item.id}
-                >
-                  {item.type}
+              {filterOptions.genders.map((item) => (
+                <p className="border-blacky cursor-pointer rounded-sm border px-3 py-1" key={item}>
+                  {item}
                 </p>
               ))}
             </div>
@@ -76,12 +111,12 @@ const Page = () => {
           <div className="mt-5">
             <p className="text-[16px] font-semibold">Brand</p>
             <div className="mt-2 flex flex-wrap gap-3">
-              {brand.map((item) => (
+              {filterOptions.brands.map((item) => (
                 <p
                   className="border-blacky cursor-pointer rounded-sm border px-3 py-1"
                   key={item.id}
                 >
-                  {item.brand}
+                  {item.name}
                 </p>
               ))}
             </div>
@@ -93,14 +128,10 @@ const Page = () => {
             placeholder="Search"
             className="mx-7 mt-20 w-full border-b text-2xl outline-none"
             autoFocus
-            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <div className="mt-5 ml-7 flex justify-between text-[16px]">
-            <p>Products {searchResults.length} results</p>
-            <p
-              onClick={openFilter}
-              className="border-blacky flex cursor-pointer items-center gap-1 rounded-sm border px-2 lg:hidden"
-            >
+            <p>Products {pagination.totalProducts} results</p>
+            <p className="border-blacky flex cursor-pointer items-center gap-1 rounded-sm border px-2 lg:hidden">
               <ArrowDownUp size={18} strokeWidth={1.25} /> Filter & Sort
             </p>
             <div className="hidden lg:block">
@@ -109,23 +140,22 @@ const Page = () => {
                   <SelectValue placeholder="Sort" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="option3">
+                  <SelectItem value="name_asc">
                     Name: A to Z <ArrowUpZA size={32} strokeWidth={1.25} />
                   </SelectItem>
-                  <SelectItem value="option4">
+                  <SelectItem value="name_desc">
                     Name: Z to A <ArrowDownZA size={32} strokeWidth={1.25} />
                   </SelectItem>
-                  <SelectItem value="option1">
-                    Price: Low to High <ArrowUp10 size={32} strokeWidth={1.25} />{' '}
+                  <SelectItem value="price_asc">
+                    Price: Low to High <ArrowUp10 size={32} strokeWidth={1.25} />
                   </SelectItem>
-                  <SelectItem value="option2">
+                  <SelectItem value="price_desc">
                     Price: High to Low <ArrowDown10 size={32} strokeWidth={1.25} />
                   </SelectItem>
-
-                  <SelectItem value="option5">
+                  <SelectItem value="most_popular">
                     Most Popular <ArrowDownWideNarrow size={32} strokeWidth={1.25} />
                   </SelectItem>
-                  <SelectItem value="option6">
+                  <SelectItem value="least_popular">
                     Least Popular <ArrowUpWideNarrow size={32} strokeWidth={1.25} />
                   </SelectItem>
                 </SelectContent>
@@ -135,30 +165,60 @@ const Page = () => {
 
           <div>
             <div className="mt-4 ml-7 grid h-full grid-cols-2 gap-2 text-base md:grid-cols-3 lg:grid-cols-4 lg:overflow-y-auto">
-              {searchResults.map((results) => (
+              {products.map((results) => (
                 <div
-                  key={results.item.id}
+                  key={results.id}
                   className="bg-masculine flex h-96 flex-col justify-between rounded-md py-3 lg:h-[25rem] 2xl:h-[32rem]"
                 >
                   <p className="mx-auto min-w-36 rounded-full bg-black px-2 py-2 text-center text-white md:grid-cols-3 lg:grid-cols-4">
-                    {results.item.brand}
+                    {results.brand.name}
                   </p>
                   <Image
-                    src={`${results.item.image_url}`}
-                    alt={`${results.item.image_alt}`}
+                    src={`${results.primary_image}`}
+                    alt={`${results.primary_image}`}
                     width={600}
                     height={600}
                     className="mx-auto h-60 w-60 object-cover"
                   />
                   <div className="pl-5">
-                    <p>{results.item.name}</p>
-                    <p>{results.item.price}$</p>
+                    <p>{results.name}</p>
+                    <p>{results.price}$</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
+      </div>
+      <div className="m-5">
+        <Pagination>
+          <PaginationContent>
+            {pagination.hasPreviousPage && (
+              <PaginationItem>
+                <PaginationPrevious href={createPageUrl(pagination.currentPage - 1)} />
+              </PaginationItem>
+            )}
+            {getVisiblePages().map((pageNum, index) => (
+              <PaginationItem key={`page-${pageNum}-${index}`}>
+                {pageNum === '...' ? (
+                  <PaginationEllipsis />
+                ) : (
+                  <PaginationLink
+                    href={createPageUrl(pageNum as number)}
+                    isActive={pageNum === pagination.currentPage}
+                  >
+                    {pageNum}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+            {pagination.hasNextPage && (
+              <PaginationItem>
+                <PaginationNext href={createPageUrl(pagination.currentPage + 1)} />
+              </PaginationItem>
+            )}
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
