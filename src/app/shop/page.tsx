@@ -26,8 +26,7 @@ interface Props {
 }
 
 const Page = async ({ searchParams }: Props) => {
-  // Convert searchParams to the right format
-  const searchParamss = await searchParams;
+  const searchParamss = await (searchParams as Promise<SearchParams>);
   const params = {
     page: parseInt(searchParamss.page || '1'),
     search: searchParamss.search || '',
