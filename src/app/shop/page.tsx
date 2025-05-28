@@ -22,11 +22,11 @@ interface SearchParams {
 }
 
 interface Props {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }
 
 const Page = async ({ searchParams }: Props) => {
-  const searchParamss = await (searchParams as Promise<SearchParams>);
+  const searchParamss = await searchParams;
   const params = {
     page: parseInt(searchParamss.page || '1'),
     search: searchParamss.search || '',
