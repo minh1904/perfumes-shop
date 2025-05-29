@@ -1,10 +1,32 @@
 'use client';
-import { useFilterStore } from '@/stores';
+import { useUrlSync } from '@/hooks/useUrlSync';
+import {
+  ArrowDown10,
+  ArrowDownWideNarrow,
+  ArrowDownZA,
+  ArrowUp10,
+  ArrowUpWideNarrow,
+  ArrowUpZA,
+} from 'lucide-react';
 import { X } from 'lucide-react';
 import React, { useEffect } from 'react';
+import { useFilterStore } from '@/stores';
 
 const FilternSort = () => {
-  const { isOpenFilter, closeFilter } = useFilterStore();
+  const {
+    isOpenFilter,
+    closeFilter,
+    selectedSort,
+    selectedBrands,
+    selectedGenders,
+    setSort,
+    toggleBrand,
+    toggleGender,
+    clearAllFilters,
+  } = useFilterStore();
+
+  const { updateUrl } = useUrlSync();
+
   useEffect(() => {
     if (isOpenFilter) {
       document.body.style.overflow = 'hidden';
@@ -15,80 +37,211 @@ const FilternSort = () => {
       document.body.style.overflow = '';
     };
   }, [isOpenFilter]);
+
+  const handleSortChange = (sortValue: string) => {
+    setSort(sortValue);
+    updateUrl();
+  };
+
+  const handleBrandToggle = (brandValue: string) => {
+    toggleBrand(brandValue);
+    updateUrl();
+  };
+
+  const handleGenderToggle = (genderValue: string) => {
+    toggleGender(genderValue);
+    updateUrl();
+  };
+
+  const handleClearAll = () => {
+    clearAllFilters();
+    updateUrl();
+  };
+
   return (
     <div
-      className={`absolute top-0 left-0 z-[9999] h-screen w-full bg-white px-8 duration-500 lg:hidden ${isOpenFilter ? 'translate-y-0 opacity-100' : '-translate-y-[200%]'} `}
+      className={`absolute top-0 left-0 z-[9999] h-screen w-full bg-white px-8 duration-500 lg:hidden ${
+        isOpenFilter ? 'translate-y-0 opacity-100' : '-translate-y-[200%]'
+      }`}
     >
       <div className="mt-10 flex items-center justify-between">
         <p className="text-[16px] font-semibold">Filter and sort</p>
-        <X
-          size={40}
-          strokeWidth={1.25}
-          onClick={closeFilter}
-          className="cursor-pointer duration-400 hover:rotate-180"
-        />
+        <div className="flex items-center gap-4">
+          <button onClick={handleClearAll} className="text-sm text-blue-600 hover:text-blue-800">
+            Clear All
+          </button>
+          <X
+            size={40}
+            strokeWidth={1.25}
+            onClick={closeFilter}
+            className="cursor-pointer duration-400 hover:rotate-180"
+          />
+        </div>
       </div>
-      <div>
-        <p>Sort by</p>
-        <div className="mt-2 flex flex-wrap gap-3">
-          {sort.map((item) => (
-            <p className="border-blacky cursor-pointer rounded-sm border px-3 py-1" key={item.id}>
+
+      {/* Sort Section */}
+      <div className="mt-6">
+        <p className="mb-3 text-[16px] font-semibold">Sort by</p>
+        <div className="flex flex-wrap gap-3">
+          {sortOptions.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleSortChange(item.value)}
+              className={`cursor-pointer rounded-sm border px-3 py-2 text-sm transition-all duration-200 ${
+                selectedSort === item.value
+                  ? 'border-black bg-black text-white'
+                  : 'border-gray-300 hover:border-gray-500 hover:bg-gray-50'
+              }`}
+            >
               {item.type}
-            </p>
+            </button>
           ))}
         </div>
       </div>
 
-      <p className="mt-5">Filter by</p>
-      <div>
-        <p className="text-[16px] font-semibold">Gender</p>
-        <div className="mt-2 flex flex-wrap gap-3">
-          {gender.map((item) => (
-            <p className="border-blacky cursor-pointer rounded-sm border px-3 py-1" key={item.id}>
+      {/* Gender Filter */}
+      <div className="mt-6">
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-[16px] font-semibold">Filter by Gender</p>
+          {selectedGenders.length > 0 && (
+            <button
+              onClick={() => {
+                useFilterStore.getState().clearGenders();
+                updateUrl();
+              }}
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {genderOptions.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleGenderToggle(item.value)}
+              className={`cursor-pointer rounded-sm border px-3 py-2 text-sm transition-all duration-200 ${
+                selectedGenders.includes(item.value)
+                  ? 'border-black bg-black text-white'
+                  : 'border-gray-300 hover:border-gray-500 hover:bg-gray-50'
+              }`}
+            >
               {item.type}
-            </p>
+            </button>
           ))}
         </div>
       </div>
 
-      <div className="mt-5">
-        <p className="text-[16px] font-semibold">Brand</p>
-        <div className="mt-2 flex flex-wrap gap-3">
-          {brand.map((item) => (
-            <p className="border-blacky cursor-pointer rounded-sm border px-3 py-1" key={item.id}>
+      {/* Brand Filter */}
+      <div className="mt-6">
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-[16px] font-semibold">Filter by Brand</p>
+          {selectedBrands.length > 0 && (
+            <button
+              onClick={() => {
+                useFilterStore.getState().clearBrands();
+                updateUrl();
+              }}
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {brandOptions.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleBrandToggle(item.value)}
+              className={`cursor-pointer rounded-sm border px-3 py-2 text-sm transition-all duration-200 ${
+                selectedBrands.includes(item.value)
+                  ? 'border-black bg-black text-white'
+                  : 'border-gray-300 hover:border-gray-500 hover:bg-gray-50'
+              }`}
+            >
               {item.brand}
-            </p>
+            </button>
           ))}
         </div>
       </div>
+
+      {/* Applied Filters Summary */}
+      {(selectedSort || selectedBrands.length > 0 || selectedGenders.length > 0) && (
+        <div className="mt-6 border-t pt-4">
+          <p className="mb-2 text-sm font-medium">Applied Filters:</p>
+          <div className="space-y-1 text-sm text-gray-600">
+            {selectedSort && <p>Sort: {sortOptions.find((s) => s.value === selectedSort)?.type}</p>}
+            {selectedBrands.length > 0 && <p>Brands: {selectedBrands.length} selected</p>}
+            {selectedGenders.length > 0 && <p>Genders: {selectedGenders.length} selected</p>}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default FilternSort;
 
-export const sort = [
-  { id: 1, type: 'A to Z' },
-  { id: 2, type: 'Z to A' },
-  { id: 3, type: 'Price: Low to High' },
-  { id: 4, type: 'Price: High to Low' },
-  { id: 5, type: 'Most Popular' },
-  { id: 6, type: 'Least Popular' },
+export const sortOptions = [
+  {
+    id: 1,
+    type: 'A to Z',
+    value: 'name_asc',
+    label: 'Name: A to Z',
+    icon: <ArrowUpZA size={18} strokeWidth={1.25} />,
+  },
+  {
+    id: 2,
+    type: 'Z to A',
+    value: 'name_desc',
+    label: 'Name: Z to A',
+    icon: <ArrowDownZA size={18} strokeWidth={1.25} />,
+  },
+  {
+    id: 3,
+    type: 'Price: Low to High',
+    value: 'price_asc',
+    label: 'Price: Low to High',
+    icon: <ArrowUp10 size={18} strokeWidth={1.25} />,
+  },
+  {
+    id: 4,
+    type: 'Price: High to Low',
+    value: 'price_desc',
+    label: 'Price: High to Low',
+    icon: <ArrowDown10 size={18} strokeWidth={1.25} />,
+  },
+  {
+    id: 5,
+    type: 'Most Popular',
+    value: 'sale_desc',
+    label: 'Most Popular',
+    icon: <ArrowDownWideNarrow size={18} strokeWidth={1.25} />,
+  },
+  {
+    id: 6,
+    type: 'Least Popular',
+    value: 'sale_asc',
+    label: 'Least Popular',
+    icon: <ArrowUpWideNarrow size={18} strokeWidth={1.25} />,
+  },
 ];
-export const gender = [
-  { id: 1, type: 'Women' },
-  { id: 2, type: 'Men' },
-  { id: 3, type: 'Unisex' },
+
+export const genderOptions = [
+  { id: 1, type: 'Female', value: 'female' },
+  { id: 2, type: 'Male', value: 'male' },
+  { id: 3, type: 'Unisex', value: 'unisex' },
 ];
-export const brand = [
-  { id: 1, brand: 'Creed' },
-  { id: 2, brand: 'Chanel' },
-  { id: 3, brand: 'Tom Ford' },
-  { id: 4, brand: 'Yves Saint Laurent' },
-  { id: 5, brand: 'Dior' },
-  { id: 6, brand: 'Amouage' },
-  { id: 7, brand: 'Byredo' },
-  { id: 8, brand: 'Maison Francis Kurkdjian' },
-  { id: 9, brand: 'Jo Malone' },
-  { id: 10, brand: 'Guerlain' },
+
+export const brandOptions = [
+  { id: 1, brand: 'Creed', value: 'creed' },
+  { id: 2, brand: 'Chanel', value: 'chanel' },
+  { id: 3, brand: 'Tom Ford', value: 'tom-ford' },
+  { id: 4, brand: 'Yves Saint Laurent', value: 'ysl' },
+  { id: 5, brand: 'Dior', value: 'dior' },
+  { id: 6, brand: 'Amouage', value: 'amouage' },
+  { id: 7, brand: 'Byredo', value: 'byredo' },
+  { id: 8, brand: 'Maison Francis Kurkdjian', value: 'mfk' },
+  { id: 9, brand: 'Jo Malone', value: 'jo-malone' },
+  { id: 10, brand: 'Guerlain', value: 'guerlain' },
 ];

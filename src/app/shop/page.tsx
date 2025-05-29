@@ -7,11 +7,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { ArrowDownUp } from 'lucide-react';
+
 import React from 'react';
 import Image from 'next/image';
 import { getFilterOptions, getProducts } from '@/actions/load-product';
 import SortComponent from '@/components/ui/sort';
+import FilterSortButton from '@/components/ui/FilterSortButton';
+import Filter from '@/components/ui/Filter';
 
 interface SearchParams {
   page?: string;
@@ -78,54 +80,26 @@ const Page = async ({ searchParams }: Props) => {
   };
 
   return (
-    <div className="min-h-screen max-w-full overflow-x-hidden">
+    <div className="min-h-screen max-w-full overflow-x-hidden px-7">
       <div className="w-full lg:flex">
-        <div className="mt-15 hidden w-[20%] pl-10 lg:block">
-          <p className="mt-5">Filter by</p>
-          <div>
-            <p className="text-[16px] font-semibold">Gender</p>
-            <div className="mt-2 flex flex-wrap gap-3">
-              {filterOptions.genders.map((item) => (
-                <p className="border-blacky cursor-pointer rounded-sm border px-3 py-1" key={item}>
-                  {item}
-                </p>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <p className="text-[16px] font-semibold">Brand</p>
-            <div className="mt-2 flex flex-wrap gap-3">
-              {filterOptions.brands.map((item) => (
-                <p
-                  className="border-blacky cursor-pointer rounded-sm border px-3 py-1"
-                  key={item.id}
-                >
-                  {item.name}
-                </p>
-              ))}
-            </div>
-          </div>
-        </div>
+        <Filter filterOptions={filterOptions} />
 
         <div className="lg:w-[80%]">
           <input
             placeholder="Search"
-            className="mx-7 mt-20 w-full border-b text-2xl outline-none"
+            className="mt-20 w-full border-b text-2xl outline-none"
             autoFocus
           />
-          <div className="mt-5 ml-7 flex justify-between text-[16px]">
+          <div className="mt-5 flex justify-between text-[16px]">
             <p>Products {pagination.totalProducts} results</p>
-            <p className="border-blacky flex cursor-pointer items-center gap-1 rounded-sm border px-2 lg:hidden">
-              <ArrowDownUp size={18} strokeWidth={1.25} /> Filter & Sort
-            </p>
+            <FilterSortButton />
             <div className="hidden lg:block">
-              <SortComponent currentSort={params.sortBy} className="ml-auto" />
+              <SortComponent className="ml-auto" />
             </div>
           </div>
 
           <div>
-            <div className="mt-4 ml-7 grid h-full grid-cols-2 gap-2 text-base md:grid-cols-3 lg:grid-cols-4 lg:overflow-y-auto">
+            <div className="mt-4 grid h-full grid-cols-2 gap-2 text-base md:grid-cols-3 lg:grid-cols-4 lg:overflow-y-auto">
               {products.map((results) => (
                 <div
                   key={results.id}

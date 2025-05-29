@@ -16,7 +16,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <Menu />
       <FilternSort />
       <div>{children}</div>
-
       <Footer />
     </main>
   );
