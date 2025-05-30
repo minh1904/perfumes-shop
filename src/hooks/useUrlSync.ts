@@ -18,15 +18,17 @@ export const useUrlSync = () => {
       const currentParams = new URLSearchParams(searchParams.toString());
       const filterParams = getUrlParams();
 
-      // Giữ lại các params khác (như search, category, etc.)
-      const finalParams = new URLSearchParams(currentParams);
+      // Giữ lại các params khác không liên quan đến filter
+      const finalParams = new URLSearchParams();
 
-      // Remove old filter params
-      finalParams.delete('sortBy');
-      finalParams.delete('brands');
-      finalParams.delete('genders');
+      // Copy tất cả params hiện tại trừ những cái sẽ được override
+      currentParams.forEach((value, key) => {
+        if (!['sortBy', 'brands', 'genders', 'search', 'page'].includes(key)) {
+          finalParams.set(key, value);
+        }
+      });
 
-      // Add new filter params
+      // Add new filter params từ store
       filterParams.forEach((value, key) => {
         finalParams.set(key, value);
       });
@@ -34,10 +36,16 @@ export const useUrlSync = () => {
       // Reset page khi filter thay đổi
       if (resetPage) {
         finalParams.set('page', '1');
+      } else {
+        // Giữ lại page hiện tại nếu không reset
+        const currentPage = currentParams.get('page');
+        if (currentPage) {
+          finalParams.set('page', currentPage);
+        }
       }
 
       // Update URL
-      router.push(`?${finalParams.toString()}`);
+      router.push(`?${finalParams.toString()}`, { scroll: false });
     },
     [router, searchParams, getUrlParams],
   );

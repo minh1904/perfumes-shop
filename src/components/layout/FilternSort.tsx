@@ -11,8 +11,9 @@ import {
 import { X } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useFilterStore } from '@/stores';
+import { FilterProps } from '../ui/Filter';
 
-const FilternSort = () => {
+const FilternSort = ({ filterOptions }: FilterProps) => {
   const {
     isOpenFilter,
     closeFilter,
@@ -57,7 +58,10 @@ const FilternSort = () => {
     clearAllFilters();
     updateUrl();
   };
-
+  const validGenders = filterOptions.genders.filter((item): item is string => item !== null);
+  const validBrands = filterOptions.brands.filter(
+    (item): item is { id: number; name: string; slug: string } => item !== null,
+  );
   return (
     <div
       className={`absolute top-0 left-0 z-[9999] h-screen w-full bg-white px-8 duration-500 lg:hidden ${
@@ -103,7 +107,7 @@ const FilternSort = () => {
       <div className="mt-6">
         <div className="mb-2 flex items-center justify-between">
           <p className="text-[16px] font-semibold">Filter by Gender</p>
-          {selectedGenders.length > 0 && (
+          {validGenders.length > 0 && (
             <button
               onClick={() => {
                 useFilterStore.getState().clearGenders();
@@ -116,17 +120,17 @@ const FilternSort = () => {
           )}
         </div>
         <div className="flex flex-wrap gap-3">
-          {genderOptions.map((item) => (
+          {validGenders.map((item) => (
             <button
-              key={item.id}
-              onClick={() => handleGenderToggle(item.value)}
+              key={item}
+              onClick={() => handleGenderToggle(item)}
               className={`cursor-pointer rounded-sm border px-3 py-2 text-sm transition-all duration-200 ${
-                selectedGenders.includes(item.value)
+                selectedGenders.includes(item)
                   ? 'border-black bg-black text-white'
                   : 'border-gray-300 hover:border-gray-500 hover:bg-gray-50'
               }`}
             >
-              {item.type}
+              {item}
             </button>
           ))}
         </div>
@@ -136,7 +140,7 @@ const FilternSort = () => {
       <div className="mt-6">
         <div className="mb-2 flex items-center justify-between">
           <p className="text-[16px] font-semibold">Filter by Brand</p>
-          {selectedBrands.length > 0 && (
+          {validBrands.length > 0 && (
             <button
               onClick={() => {
                 useFilterStore.getState().clearBrands();
@@ -149,17 +153,17 @@ const FilternSort = () => {
           )}
         </div>
         <div className="flex flex-wrap gap-3">
-          {brandOptions.map((item) => (
+          {validBrands.map((item) => (
             <button
               key={item.id}
-              onClick={() => handleBrandToggle(item.value)}
+              onClick={() => handleBrandToggle(item.slug)}
               className={`cursor-pointer rounded-sm border px-3 py-2 text-sm transition-all duration-200 ${
-                selectedBrands.includes(item.value)
+                selectedBrands.includes(item.slug)
                   ? 'border-black bg-black text-white'
                   : 'border-gray-300 hover:border-gray-500 hover:bg-gray-50'
               }`}
             >
-              {item.brand}
+              {item.name}
             </button>
           ))}
         </div>
@@ -225,23 +229,4 @@ export const sortOptions = [
     label: 'Least Popular',
     icon: <ArrowUpWideNarrow size={18} strokeWidth={1.25} />,
   },
-];
-
-export const genderOptions = [
-  { id: 1, type: 'Female', value: 'female' },
-  { id: 2, type: 'Male', value: 'male' },
-  { id: 3, type: 'Unisex', value: 'unisex' },
-];
-
-export const brandOptions = [
-  { id: 1, brand: 'Creed', value: 'creed' },
-  { id: 2, brand: 'Chanel', value: 'chanel' },
-  { id: 3, brand: 'Tom Ford', value: 'tom-ford' },
-  { id: 4, brand: 'Yves Saint Laurent', value: 'ysl' },
-  { id: 5, brand: 'Dior', value: 'dior' },
-  { id: 6, brand: 'Amouage', value: 'amouage' },
-  { id: 7, brand: 'Byredo', value: 'byredo' },
-  { id: 8, brand: 'Maison Francis Kurkdjian', value: 'mfk' },
-  { id: 9, brand: 'Jo Malone', value: 'jo-malone' },
-  { id: 10, brand: 'Guerlain', value: 'guerlain' },
 ];

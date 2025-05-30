@@ -1,5 +1,4 @@
 import Cart from '@/components/layout/Cart';
-import FilternSort from '@/components/layout/FilternSort';
 import Footer from '@/components/layout/Footer';
 import Menu from '@/components/layout/Menu';
 import Navbar from '@/components/layout/Navbar';
@@ -14,7 +13,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <Cart />
       <Overlay />
       <Menu />
-      <FilternSort />
       <div>{children}</div>
       <Footer />
     </main>

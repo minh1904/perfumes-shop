@@ -22,15 +22,10 @@ export interface Gender {
 }
 
 interface FilterState {
-  // UI States
   isOpenFilter: boolean;
-
-  // Filter Data
   selectedSort: string;
   selectedBrands: string[];
   selectedGenders: string[];
-
-  // Actions
   openFilter: () => void;
   closeFilter: () => void;
   setSort: (sortValue: string) => void;
@@ -39,28 +34,31 @@ interface FilterState {
   clearAllFilters: () => void;
   clearBrands: () => void;
   clearGenders: () => void;
-
-  // Sync với URL
   syncFromUrl: (searchParams: URLSearchParams) => void;
   getUrlParams: () => URLSearchParams;
+  search: string;
+  gender: string[];
+  brand: string[];
+  page: number;
+  setSearch: (search: string) => void;
 }
 
 export const useFilterStore = create<FilterState>()(
   persist(
     (set, get) => ({
-      // Initial States
+      search: '',
+      gender: [],
+      brand: [],
+      page: 1,
       isOpenFilter: false,
       selectedSort: '',
       selectedBrands: [],
       selectedGenders: [],
-
-      // UI Actions
       openFilter: () => set({ isOpenFilter: true }),
       closeFilter: () => set({ isOpenFilter: false }),
 
-      // Filter Actions
       setSort: (sortValue: string) => set({ selectedSort: sortValue }),
-
+      setSearch: (search) => set({ search, page: 1 }),
       toggleBrand: (brandValue: string) =>
         set((state) => ({
           selectedBrands: state.selectedBrands.includes(brandValue)
@@ -80,27 +78,35 @@ export const useFilterStore = create<FilterState>()(
           selectedSort: '',
           selectedBrands: [],
           selectedGenders: [],
+          search: '',
+          page: 1,
         }),
 
-      clearBrands: () => set({ selectedBrands: [] }),
-      clearGenders: () => set({ selectedGenders: [] }),
+      clearBrands: () => set({ selectedBrands: [], page: 1 }),
+      clearGenders: () => set({ selectedGenders: [], page: 1 }),
 
       // URL Sync Methods
       syncFromUrl: (searchParams: URLSearchParams) => {
         const sortBy = searchParams.get('sortBy') || '';
         const brands = searchParams.get('brands')?.split(',').filter(Boolean) || [];
         const genders = searchParams.get('genders')?.split(',').filter(Boolean) || [];
+        const search = searchParams.get('search') || '';
 
         set({
           selectedSort: sortBy,
           selectedBrands: brands,
           selectedGenders: genders,
+          search: search,
         });
       },
 
       getUrlParams: () => {
         const state = get();
         const params = new URLSearchParams();
+
+        if (state.search) {
+          params.set('search', state.search);
+        }
 
         if (state.selectedSort) {
           params.set('sortBy', state.selectedSort);
@@ -123,6 +129,7 @@ export const useFilterStore = create<FilterState>()(
         selectedSort: state.selectedSort,
         selectedBrands: state.selectedBrands,
         selectedGenders: state.selectedGenders,
+        search: state.search,
       }),
     },
   ),

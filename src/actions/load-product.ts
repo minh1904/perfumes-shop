@@ -1,34 +1,41 @@
 import { db } from '@/db/db';
 import { brands, images, products } from '@/db/schema';
-import { and, count, desc, asc, ilike, eq, sql } from 'drizzle-orm';
+import { and, count, desc, asc, ilike, eq, sql, inArray } from 'drizzle-orm';
 
 export interface SearchParams {
   page?: number;
   search?: string;
-  gender?: string;
-  brand?: string;
+  genders?: string[]; // Đổi thành array
+  brands?: string[]; // Đổi thành array
   sortBy?: string;
   limit?: number;
 }
 
 export async function getProducts(params: SearchParams) {
-  const { page = 1, search = '', gender = '', brand = '', sortBy = '', limit = 12 } = params;
+  const {
+    page = 1,
+    search = '',
+    genders = [],
+    brands: brandSlugs = [],
+    sortBy = '',
+    limit = 12,
+  } = params;
 
   const offset = (page - 1) * limit;
-
-  // Tạo điều kiện where
   const whereConditions = [];
 
   if (search) {
     whereConditions.push(ilike(products.name, `%${search}%`));
   }
 
-  if (gender) {
-    whereConditions.push(eq(products.gender, gender));
+  // Xử lý multiple genders
+  if (genders.length > 0) {
+    whereConditions.push(inArray(products.gender, genders));
   }
 
-  if (brand) {
-    whereConditions.push(eq(brands.slug, brand));
+  // Xử lý multiple brands
+  if (brandSlugs.length > 0) {
+    whereConditions.push(inArray(brands.slug, brandSlugs));
   }
 
   // Chỉ lấy products có status = true

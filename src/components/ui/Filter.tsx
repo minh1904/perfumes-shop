@@ -8,7 +8,7 @@ interface FilterOptions {
   brands: ({ id: number; name: string; slug: string } | null)[];
 }
 
-interface FilterProps {
+export interface FilterProps {
   filterOptions: FilterOptions;
 }
 
@@ -64,13 +64,13 @@ const Filter = ({ filterOptions }: FilterProps) => {
               }}
               className="mt-5 cursor-pointer pr-5 text-[14px] text-blue-600 hover:text-blue-900"
             >
-              Clear all
+              Clear
             </p>
           </div>
           <div className="mt-2 flex flex-wrap gap-3">
             {validGenders.map((item) => (
               <p
-                className={`border-blacky cursor-pointer rounded-sm border px-3 py-1 ${
+                className={`border-blacky cursor-pointer rounded-sm border px-3 py-1 duration-300 ${
                   selectedGenders.includes(item)
                     ? 'border-black bg-black text-white'
                     : 'border-gray-300 hover:border-gray-500 hover:bg-gray-50'
@@ -99,19 +99,19 @@ const Filter = ({ filterOptions }: FilterProps) => {
               }}
               className="mt-5 cursor-pointer pr-5 text-[14px] text-blue-600 hover:text-blue-900"
             >
-              Clear all
+              Clear
             </p>
           </div>
           <div className="mt-2 flex flex-wrap gap-3">
             {validBrands.map((item) => (
               <p
-                className={`border-blacky cursor-pointer rounded-sm border px-3 py-1 ${
-                  selectedBrands.includes(item.name)
+                className={`border-blacky cursor-pointer rounded-sm border px-3 py-1 duration-300 ${
+                  selectedBrands.includes(item.slug)
                     ? 'border-black bg-black text-white'
                     : 'border-gray-300 hover:border-gray-500 hover:bg-gray-50'
                 }`}
                 key={item.id}
-                onClick={() => handleBrandToggle(item.name)}
+                onClick={() => handleBrandToggle(item.slug)}
               >
                 {item.name}
               </p>

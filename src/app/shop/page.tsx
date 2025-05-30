@@ -14,12 +14,14 @@ import { getFilterOptions, getProducts } from '@/actions/load-product';
 import SortComponent from '@/components/ui/sort';
 import FilterSortButton from '@/components/ui/FilterSortButton';
 import Filter from '@/components/ui/Filter';
+import SearchShop from '@/components/ui/SearchShop';
+import FilternSort from '@/components/layout/FilternSort';
 
 interface SearchParams {
   page?: string;
   search?: string;
-  gender?: string;
-  brand?: string;
+  genders?: string;
+  brands?: string;
   sortBy?: string;
 }
 
@@ -29,15 +31,19 @@ interface Props {
 
 const Page = async ({ searchParams }: Props) => {
   const searchParamss = await searchParams;
+  const parseMultipleValues = (value: string | undefined): string[] => {
+    if (!value) return [];
+    return value.split(',').filter(Boolean);
+  };
+
   const params = {
     page: parseInt(searchParamss.page || '1'),
     search: searchParamss.search || '',
-    gender: searchParamss.gender || '',
-    brand: searchParamss.brand || '',
+    genders: parseMultipleValues(searchParamss.genders),
+    brands: parseMultipleValues(searchParamss.brands),
     sortBy: searchParamss.sortBy || '',
   };
 
-  // Fetch data và filter options parallel
   const [data, filterOptions] = await Promise.all([getProducts(params), getFilterOptions()]);
 
   const { products, pagination } = data;
@@ -81,15 +87,12 @@ const Page = async ({ searchParams }: Props) => {
 
   return (
     <div className="min-h-screen max-w-full overflow-x-hidden px-7">
+      <FilternSort filterOptions={filterOptions} />
       <div className="w-full lg:flex">
         <Filter filterOptions={filterOptions} />
 
         <div className="lg:w-[80%]">
-          <input
-            placeholder="Search"
-            className="mt-20 w-full border-b text-2xl outline-none"
-            autoFocus
-          />
+          <SearchShop />
           <div className="mt-5 flex justify-between text-[16px]">
             <p>Products {pagination.totalProducts} results</p>
             <FilterSortButton />
