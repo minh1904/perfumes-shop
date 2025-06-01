@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { getAllProducts, getProductBySlugAndId } from '@/actions/load-product';
 
 type Props = {
-  params: { productSlug: string };
+  params: Promise<{ productSlug: string }>;
 };
 export const revalidate = 3600;
 export const dynamicParams = true;
