@@ -5,8 +5,8 @@ import { and, count, desc, asc, ilike, eq, sql, inArray } from 'drizzle-orm';
 export interface SearchParams {
   page?: number;
   search?: string;
-  genders?: string[]; // Đổi thành array
-  brands?: string[]; // Đổi thành array
+  genders?: string[];
+  brands?: string[];
   sortBy?: string;
   limit?: number;
 }
@@ -28,22 +28,18 @@ export async function getProducts(params: SearchParams) {
     whereConditions.push(ilike(products.name, `%${search}%`));
   }
 
-  // Xử lý multiple genders
   if (genders.length > 0) {
     whereConditions.push(inArray(products.gender, genders));
   }
 
-  // Xử lý multiple brands
   if (brandSlugs.length > 0) {
     whereConditions.push(inArray(brands.slug, brandSlugs));
   }
 
-  // Chỉ lấy products có status = true
   whereConditions.push(eq(products.status, true));
 
   const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-  // Xử lý sorting
   let orderByClause;
   switch (sortBy) {
     case 'name_asc':
@@ -158,4 +154,18 @@ export async function getFilterOptions() {
     brands: brandsList,
     genders: gendersList.map((g) => g.gender).filter(Boolean),
   };
+}
+
+export async function getProductBySlugAndId(id: string) {
+  const result = await db
+    .select()
+    .from(products)
+    .where(eq(products.id, parseInt(id)))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function getAllProducts() {
+  return await db.select().from(products);
 }

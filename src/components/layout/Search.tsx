@@ -93,7 +93,7 @@ const Search = () => {
 
   const searchResults = useMemo(() => {
     if (!fuse || !searchTerm) return [];
-    return fuse.search(searchTerm).slice(0, 6);
+    return fuse.search(searchTerm);
   }, [fuse, searchTerm]);
 
   useEffect(() => {

@@ -16,6 +16,7 @@ import FilterSortButton from '@/components/ui/FilterSortButton';
 import Filter from '@/components/ui/Filter';
 import SearchShop from '@/components/ui/SearchShop';
 import FilternSort from '@/components/layout/FilternSort';
+import Link from 'next/link';
 
 interface SearchParams {
   page?: string;
@@ -104,9 +105,10 @@ const Page = async ({ searchParams }: Props) => {
           <div>
             <div className="mt-4 grid h-full grid-cols-2 gap-2 text-base md:grid-cols-3 lg:grid-cols-4 lg:overflow-y-auto">
               {products.map((results) => (
-                <div
+                <Link
+                  href={`/product/${results.id}-${results.slug}`}
                   key={results.id}
-                  className="bg-masculine flex h-96 flex-col justify-between rounded-md py-3 lg:h-[25rem] 2xl:h-[32rem]"
+                  className="bg-masculine flex h-96 cursor-pointer flex-col justify-between rounded-md py-3 lg:h-[25rem] 2xl:h-[32rem]"
                 >
                   <p className="mx-auto min-w-36 rounded-full bg-black px-2 py-2 text-center text-white md:grid-cols-3 lg:grid-cols-4">
                     {results.brand.name}
@@ -122,7 +124,7 @@ const Page = async ({ searchParams }: Props) => {
                     <p>{results.name}</p>
                     <p>{results.price}$</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
