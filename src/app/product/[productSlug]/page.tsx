@@ -22,25 +22,25 @@ export default async function ProductPage({ params }: Props) {
   if (!product || product.slug !== slug) notFound();
 
   return (
-    <div className="container h-screen justify-center">
-      <div className="px-7">
-        <div>
-          <Image
-            src={product.images[0]?.url || '/placeholder.jpg'}
-            alt={product.images[0]?.alt_text || 'Ảnh sản phẩm'}
-            width={600}
-            height={600}
-            className="rounded-lg object-cover"
-          />
-        </div>
-
-        <div className="mt-3.5">
-          <p className="border-blacky inline-block w-auto rounded-2xl border px-6 duration-300">
-            {product.brand.name}
-          </p>
-          <p className="mt-2 text-5xl">{product.name}</p>
-          <p className="mt-2 text-gray-500 uppercase">{product.gender}</p>
-          <TypeProduct product={product} />
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 pt-20">
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Product Image Column */}
+          <div className="relative">
+            <div className="relative aspect-square overflow-hidden rounded-3xl bg-white shadow-2xl">
+              <Image
+                src={product.images[0]?.url || '/placeholder.jpg'}
+                alt={product.images[0]?.alt_text || 'Product Image'}
+                fill
+                className="object-cover transition-transform duration-700 hover:scale-105"
+                loading="lazy"
+              />
+            </div>
+          </div>
+          {/* Product Info Column */}
+          <div className="flex flex-col justify-center space-y-8 lg:pt-8">
+            <TypeProduct product={product} />
+          </div>
         </div>
       </div>
     </div>

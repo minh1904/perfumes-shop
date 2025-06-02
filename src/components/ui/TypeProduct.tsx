@@ -1,20 +1,20 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { HandCoins, ShoppingBasket } from 'lucide-react';
+import { ShoppingBasket } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/types';
 
 const TypeProduct = ({ product }: { product: Product }) => {
   const [typeSelected, setTypeSelected] = useState<ProductVariant | null>(null);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+
   const increase = () => {
     setQuantity(quantity + 1);
   };
+
   const decrease = () => {
-    if (quantity > 0) {
+    if (quantity > 1) {
       setQuantity(quantity - 1);
-    } else {
-      return null;
     }
   };
 
@@ -25,50 +25,67 @@ const TypeProduct = ({ product }: { product: Product }) => {
   }, [product]);
 
   return (
-    <div className="mt-4">
-      <div className="flex gap-1">
+    <div className="flex flex-col space-y-6">
+      {/* Brand tag */}
+      <div className="inline-block w-fit rounded-full border border-gray-300 px-6 py-2 text-sm font-medium tracking-wide text-gray-600 uppercase">
+        {product.brand?.name}
+      </div>
+
+      {/* Product name */}
+      <h1 className="text-4xl leading-tight font-bold text-gray-900 md:text-5xl">{product.name}</h1>
+
+      {/* Product variants */}
+      <div className="flex gap-3">
         {product.product_variants.map((variant) => (
-          <div
+          <button
             key={variant.id}
             onClick={() => setTypeSelected(variant)}
-            className={`inline-block cursor-pointer rounded-2xl border px-8 py-1 duration-300 ${
-              typeSelected?.id === variant.id ? 'bg-blacky text-white' : 'border-gray-300'
+            className={`border-blacky cursor-pointer rounded-full border px-6 py-2 text-sm font-medium transition-all duration-200 ${
+              typeSelected?.id === variant.id
+                ? 'bg-gray-900 text-white shadow-lg'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            <p>{variant.volume_ml}ml</p>
-          </div>
+            {variant.volume_ml} ml
+          </button>
         ))}
       </div>
 
-      <div className="mt-7 flex items-center gap-2">
-        <HandCoins size={22} strokeWidth={1.25} />
-        <p className="text-3xl">{typeSelected?.price}$</p>
+      {/* Price */}
+      <div className="flex items-center gap-2">
+        <span className="text-3xl font-bold text-gray-900 md:text-4xl">{typeSelected?.price}$</span>
       </div>
 
-      <div className="mt-4">
-        <p className="">{product.short_description}</p>
+      {/* Description */}
+      <div className="max-w-lg leading-relaxed text-gray-600">
+        <p>{product.short_description}</p>
       </div>
+
+      {/* Quantity selector */}
       <div className="flex items-center gap-6">
-        <p>QTY</p>
-        <div className="flex items-center gap-5">
-          <p
+        <span className="text-sm font-medium tracking-wide text-gray-700 uppercase">QTY</span>
+        <div className="flex items-center rounded-full border border-gray-200">
+          <button
             onClick={decrease}
-            className="bg-blacky flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-white"
+            className="hover:bg-blacky text-blacky flex h-10 w-10 cursor-pointer items-center justify-center rounded-l-full transition-colors hover:text-white"
           >
-            -
-          </p>
-          <p className="text-2xl">{quantity}</p>
-          <p
+            −
+          </button>
+          <span className="w-16 text-center text-lg font-medium">{quantity}</span>
+          <button
             onClick={increase}
-            className="bg-blacky flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-white"
+            className="hover:bg-blacky text-blacky flex h-10 w-10 cursor-pointer items-center justify-center rounded-r-full transition-colors hover:text-white"
           >
             +
-          </p>
+          </button>
         </div>
       </div>
-      <div className="bg-blacky mx-auto mt-10 flex h-15 w-99 cursor-pointer items-center justify-center gap-2 rounded-4xl text-2xl text-white uppercase">
-        Add to cart <ShoppingBasket size={28} strokeWidth={1.25} />
-      </div>
+
+      {/* Add to cart button */}
+      <button className="flex w-full transform cursor-pointer items-center justify-center gap-3 rounded-full bg-rose-400 px-8 py-4 text-lg font-medium text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-rose-500 hover:shadow-xl">
+        ADD TO CART
+        <ShoppingBasket size={24} strokeWidth={1.5} />
+      </button>
     </div>
   );
 };
