@@ -1,5 +1,5 @@
 import { db } from '@/db/db';
-import { brands, images, products } from '@/db/schema';
+import { brands, images, products, productVariants } from '@/db/schema';
 import { and, count, desc, asc, ilike, eq, sql, inArray } from 'drizzle-orm';
 
 export interface SearchParams {
@@ -64,12 +64,9 @@ export async function getProducts(params: SearchParams) {
       orderByClause = [desc(products.created_at)];
   }
 
-  // Parallel queries để tối ưu performance
   const [productsList, [{ totalProducts }]] = await Promise.all([
-    // Query products với JOIN
     db
       .select({
-        // Product fields
         id: products.id,
         name: products.name,
         slug: products.slug,
@@ -86,7 +83,7 @@ export async function getProducts(params: SearchParams) {
           slug: brands.slug,
           logo_url: brands.logo_url,
         },
-        // Primary image
+
         primary_image: images.url,
       })
       .from(products)
@@ -141,13 +138,7 @@ export async function getFilterOptions() {
         gender: products.gender,
       })
       .from(products)
-      .where(
-        and(
-          eq(products.status, true),
-          // Loại bỏ null values
-          sql`${products.gender} IS NOT NULL`,
-        ),
-      ),
+      .where(and(eq(products.status, true), sql`${products.gender} IS NOT NULL`)),
   ]);
 
   return {
@@ -157,13 +148,31 @@ export async function getFilterOptions() {
 }
 
 export async function getProductBySlugAndId(id: string) {
-  const result = await db
+  const productList = await db
     .select()
     .from(products)
     .where(eq(products.id, parseInt(id)))
     .limit(1);
 
-  return result.length > 0 ? result[0] : null;
+  if (!productList.length) return null;
+
+  const product = productList[0];
+
+  const [brand] = await db.select().from(brands).where(eq(brands.id, product.brand_id)).limit(1);
+
+  const imagesList = await db.select().from(images).where(eq(images.product_id, product.id));
+
+  const variants = await db
+    .select()
+    .from(productVariants)
+    .where(eq(productVariants.product_id, product.id));
+
+  return {
+    ...product,
+    brand,
+    images: imagesList,
+    product_variants: variants,
+  };
 }
 
 export async function getAllProducts() {

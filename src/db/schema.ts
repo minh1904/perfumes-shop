@@ -1,3 +1,4 @@
+import { ProductDescription } from '@/types/types';
 import { sql, SQL } from 'drizzle-orm';
 
 import {
@@ -141,7 +142,7 @@ export const products = pgTable('products', {
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   discount: doublePrecision('discount').default(0),
   short_description: text('short_description'),
-  description: jsonb('description'),
+  description: jsonb('description').$type<ProductDescription | null>(),
   gender: varchar('gender', { length: 10 }),
   top_notes: text('top_notes'),
   middle_notes: text('middle_notes'),
