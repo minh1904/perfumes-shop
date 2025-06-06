@@ -5,8 +5,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore, useSearchStore } from '@/stores';
 import MenuIcon from '../ui/MenuIcon';
+import { useSession } from 'next-auth/react';
 
 const Navbar = () => {
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
   const { openCart } = useCartStore();
   const { openSearch } = useSearchStore();
   return (
@@ -42,7 +45,10 @@ const Navbar = () => {
           onClick={openCart}
         />
         <div className="h-4 w-[1px] bg-gray-400"></div>
-        <Link href="/login">
+        <Link className={`${userId ? 'hidden' : ''}`} href="/login">
+          <UserRound size={20} strokeWidth={1.25} className="cursor-pointer" />
+        </Link>
+        <Link className={`${userId ? '' : 'hidden'}`} href="/profile">
           <UserRound size={20} strokeWidth={1.25} className="cursor-pointer" />
         </Link>
       </div>

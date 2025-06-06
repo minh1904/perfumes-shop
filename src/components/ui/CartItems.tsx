@@ -46,7 +46,7 @@ const CartItems = () => {
     );
 
   return (
-    <div className="space-y-6 px-8 py-4">
+    <div className="h-[70%] space-y-6 overflow-y-scroll px-8 py-4">
       {itemsToRender.map((item: CartItem) => (
         <div key={item.variant_id} className="flex gap-5 border-b pb-4">
           <Image

@@ -67,6 +67,15 @@ const Menu = () => {
           </Link>
         )}
         {session?.user?.id && (
+          <Link
+            href="/profile"
+            onClick={clickHandle}
+            className="cursor-pointer text-6xl font-normal duration-400 hover:translate-x-10"
+          >
+            Profile
+          </Link>
+        )}
+        {session?.user?.id && (
           <div
             onClick={clickHandle}
             className="cursor-pointer text-6xl font-normal duration-400 hover:translate-x-10"

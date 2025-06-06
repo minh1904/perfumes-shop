@@ -77,7 +77,6 @@ export const useRemoveFromCart = () => {
       // Xóa khỏi local store
       removeItem(variant_id);
 
-      // Nếu user đã đăng nhập, đồng bộ với server
       if (session?.user?.id) {
         await saveToServer(session.user.id);
       }
