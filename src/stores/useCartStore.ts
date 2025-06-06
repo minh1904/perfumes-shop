@@ -5,15 +5,15 @@ import axios from 'axios';
 
 export interface CartItem {
   id: string;
-  variantId: number;
-  productId: number;
-  productName: string;
-  productSlug: string;
-  brandName: string;
-  volumeMl: number;
+  variant_id: number;
+  product_id: number;
+  product_name: string;
+  product_slug: string;
+  brand_name: string;
+  volume_ml: number;
   price: number;
   quantity: number;
-  imageUrl?: string;
+  image_url?: string;
   sku: string;
 }
 interface CartStore {
@@ -26,8 +26,8 @@ interface CartStore {
   error: string | null;
   // Actions
   addItem: (item: Omit<CartItem, 'id'>) => void;
-  removeItem: (variantId: number) => void;
-  updateQuantity: (variantId: number, quantity: number) => void;
+  removeItem: (variant_id: number) => void;
+  updateQuantity: (variant_id: number, quantity: number) => void;
   clearCart: () => void;
 
   // Sync với server
@@ -37,7 +37,7 @@ interface CartStore {
   // Computed values
   getTotalItems: () => number;
   getTotalPrice: () => number;
-  getItemByVariantId: (variantId: number) => CartItem | undefined;
+  getItemByVariant_id: (variant_id: number) => CartItem | undefined;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -53,13 +53,13 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (newItem) => {
         const items = get().items;
-        const existingItem = items.find((item) => item.variantId === newItem.variantId);
+        const existingItem = items.find((item) => item.variant_id === newItem.variant_id);
 
         if (existingItem) {
           // Nếu sản phẩm đã có, tăng số lượng
           set({
             items: items.map((item) =>
-              item.variantId === newItem.variantId
+              item.variant_id === newItem.variant_id
                 ? { ...item, quantity: item.quantity + newItem.quantity }
                 : item,
             ),
@@ -68,27 +68,27 @@ export const useCartStore = create<CartStore>()(
           // Thêm sản phẩm mới
           const cartItem: CartItem = {
             ...newItem,
-            id: `${newItem.variantId}-${Date.now()}`,
+            id: `${newItem.variant_id}-${Date.now()}`,
           };
           set({ items: [...items, cartItem] });
         }
       },
 
-      removeItem: (variantId) => {
+      removeItem: (variant_id) => {
         set({
-          items: get().items.filter((item) => item.variantId !== variantId),
+          items: get().items.filter((item) => item.variant_id !== variant_id),
         });
       },
 
-      updateQuantity: (variantId, quantity) => {
+      updateQuantity: (variant_id, quantity) => {
         if (quantity <= 0) {
-          get().removeItem(variantId);
+          get().removeItem(variant_id);
           return;
         }
 
         set({
           items: get().items.map((item) =>
-            item.variantId === variantId ? { ...item, quantity } : item,
+            item.variant_id === variant_id ? { ...item, quantity } : item,
           ),
         });
       },
@@ -131,7 +131,10 @@ export const useCartStore = create<CartStore>()(
 
       saveToServer: async (userId) => {
         try {
-          const items = get().items;
+          const items = get().items.map((item) => ({
+            variant_id: item.variant_id,
+            quantity: item.quantity,
+          }));
           await axios.post(`/api/cart/${userId}/sync`, { items });
         } catch (error) {
           console.error('Error saving cart to server:', error);
@@ -146,8 +149,8 @@ export const useCartStore = create<CartStore>()(
         return get().items.reduce((total, item) => total + item.price * item.quantity, 0);
       },
 
-      getItemByVariantId: (variantId) => {
-        return get().items.find((item) => item.variantId === variantId);
+      getItemByVariant_id: (variant_id) => {
+        return get().items.find((item) => item.variant_id === variant_id);
       },
     }),
     {

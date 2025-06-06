@@ -10,16 +10,16 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
 
     const result = await db
       .select({
-        variantId: cartItems.variant_id,
-        productId: products.id,
-        productName: products.name,
-        productSlug: products.slug,
-        brandName: brands.name,
-        volumeMl: productVariants.volume_ml,
+        variant_id: cartItems.variant_id,
+        product_id: products.id,
+        product_name: products.name,
+        product_slug: products.slug,
+        brand_name: brands.name,
+        volume_ml: productVariants.volume_ml,
         price: productVariants.price,
         quantity: cartItems.quantity,
         sku: productVariants.sku,
-        imageUrl: images.url,
+        image_url: images.url,
       })
       .from(cartItems)
       .innerJoin(productVariants, eq(cartItems.variant_id, productVariants.id))
@@ -31,17 +31,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
     const hasCart = result.length > 0;
 
     const transformedItems = result.map((item) => ({
-      id: `${item.variantId}-${userId}`,
-      variantId: item.variantId,
-      productId: item.productId,
-      productName: item.productName,
-      productSlug: item.productSlug,
-      brandName: item.brandName,
-      volumeMl: item.volumeMl,
+      id: `${item.variant_id}-${userId}`,
+      variant_id: item.variant_id,
+      product_id: item.product_id,
+      product_name: item.product_name,
+      product_slug: item.product_slug,
+      brand_name: item.brand_name,
+      volume_ml: item.volume_ml,
       price: parseFloat(item.price),
       quantity: item.quantity,
       sku: item.sku,
-      imageUrl: item.imageUrl,
+      image_url: item.image_url,
     }));
 
     return NextResponse.json({

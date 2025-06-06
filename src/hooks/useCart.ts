@@ -5,17 +5,17 @@ import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 
 interface AddToCartData {
-  variantId: number;
+  variant_id: number;
   quantity: number;
   productData: {
-    productId: number;
-    productName: string;
-    productSlug: string;
-    brandName: string;
-    volumeMl: number;
+    product_id: number;
+    product_name: string;
+    product_slug: string;
+    brand_name: string;
+    volume_ml: number;
     price: number;
     sku: string;
-    imageUrl?: string;
+    image_url?: string;
   };
 }
 
@@ -26,21 +26,20 @@ export const useAddToCart = () => {
 
   return useMutation({
     mutationFn: async (data: AddToCartData) => {
-      const { variantId, quantity, productData } = data;
+      const { variant_id, quantity, productData } = data;
       addItem({
-        variantId,
+        variant_id,
         quantity,
         ...productData,
       });
       if (session?.user?.id) {
         await axios.post(`/api/cart/${session.user.id}/add`, {
-          variantId,
+          variant_id,
           quantity,
         });
       }
     },
     onSuccess: () => {
-      toast.success('Add product to cart successfully');
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
     onError: (error) => {
@@ -53,19 +52,15 @@ export const useAddToCart = () => {
 export const useUpdateCartQuantity = () => {
   const { data: session } = useSession();
   const { updateQuantity, saveToServer } = useCartStore();
-  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ variantId, quantity }: { variantId: number; quantity: number }) => {
-      updateQuantity(variantId, quantity);
+    mutationFn: async ({ variant_id, quantity }: { variant_id: number; quantity: number }) => {
+      updateQuantity(variant_id, quantity);
 
       if (session?.user?.id) {
         await saveToServer(session?.user.id);
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-      toast.success('Update product to cart successfully');
-    },
+
     onError: (error) => {
       console.error('Error adding to cart:', error);
       toast.error('Cant update product to cart');
@@ -79,9 +74,9 @@ export const useRemoveFromCart = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (variantId: number) => {
+    mutationFn: async (variant_id: number) => {
       // Xóa khỏi local store
-      removeItem(variantId);
+      removeItem(variant_id);
 
       // Nếu user đã đăng nhập, đồng bộ với server
       if (session?.user?.id) {
@@ -89,7 +84,6 @@ export const useRemoveFromCart = () => {
       }
     },
     onSuccess: () => {
-      toast.success('Remove successfully');
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
     onError: (error) => {
