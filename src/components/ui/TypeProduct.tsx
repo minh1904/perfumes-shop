@@ -27,7 +27,9 @@ const TypeProduct = ({ product }: { product: Product }) => {
         image_url: product.images && product.images.length > 0 ? product.images[0].url : undefined,
       },
     });
+    setQuantity(1);
   };
+
   const increase = () => {
     setQuantity(quantity + 1);
   };
