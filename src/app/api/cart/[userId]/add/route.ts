@@ -3,7 +3,7 @@ import { cartItems } from '@/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request, { params }: { params: { userId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
     const paramss = await params;
     const userId = paramss.userId;

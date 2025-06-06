@@ -3,7 +3,7 @@ import { brands, cartItems, images, products, productVariants } from '@/db/schem
 import { and, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request, { params }: { params: { userId: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
     const param = await params;
     const userId = param.userId;
