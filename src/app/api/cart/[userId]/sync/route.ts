@@ -2,9 +2,10 @@ import { db } from '@/db/db';
 import { cartItems } from '@/db/schema';
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request, { params }: { params: { userId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
-    const userId = params.userId;
+    const param = await params;
+    const userId = param.userId;
     const { items } = await request.json();
 
     if (items.length > 0) {
