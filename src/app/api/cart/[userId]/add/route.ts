@@ -5,7 +5,8 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request, { params }: { params: { userId: string } }) {
   try {
-    const userId = params.userId;
+    const param = await params;
+    const userId = param.userId;
     const { variant_id, quantity } = await request.json();
     // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
     const existingItem = await db
