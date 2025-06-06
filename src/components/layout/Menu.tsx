@@ -4,12 +4,14 @@ import { signoutUserAction } from '@/actions/sign-out-action';
 import { useMenuStore } from '@/stores';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
 const Menu = () => {
-  const { isOpenMenu } = useMenuStore();
-
+  const { isOpenMenu, closeMenu } = useMenuStore();
+  const { data: session } = useSession();
   const clickHandle = async () => {
     await signoutUserAction();
+    closeMenu();
   };
 
   useEffect(() => {
@@ -27,27 +29,54 @@ const Menu = () => {
       className={`fixed top-0 left-0 z-[9980] flex h-screen w-screen transform flex-col justify-between bg-white transition-transform duration-500 md:hidden md:w-[40rem] ${isOpenMenu ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <div className="mt-30 ml-7 flex flex-col gap-4">
-        <Link href="/shop" className="text-6xl font-normal duration-400 hover:translate-x-10">
+        <Link
+          href="/shop"
+          onClick={closeMenu}
+          className="text-6xl font-normal duration-400 hover:translate-x-10"
+        >
           Shop
         </Link>
-        <Link href="/about" className="text-6xl font-normal duration-400 hover:translate-x-10">
+        <Link
+          href="/about"
+          onClick={closeMenu}
+          className="text-6xl font-normal duration-400 hover:translate-x-10"
+        >
           About
         </Link>
-        <Link href="/journal" className="text-6xl font-normal duration-400 hover:translate-x-10">
+        <Link
+          href="/journal"
+          onClick={closeMenu}
+          className="text-6xl font-normal duration-400 hover:translate-x-10"
+        >
           Journal
         </Link>
-        <Link href="/gallery" className="text-6xl font-normal duration-400 hover:translate-x-10">
+        <Link
+          href="/gallery"
+          onClick={closeMenu}
+          className="text-6xl font-normal duration-400 hover:translate-x-10"
+        >
           Gallery
         </Link>
-
-        <Link href="/login" className="text-6xl font-normal duration-400 hover:translate-x-10">
-          Sign Up/Login
-        </Link>
+        {!session?.user?.id && (
+          <Link
+            href="/login"
+            onClick={closeMenu}
+            className="text-6xl font-normal duration-400 hover:translate-x-10"
+          >
+            Login/Sign up
+          </Link>
+        )}
+        {session?.user?.id && (
+          <div
+            onClick={clickHandle}
+            className="cursor-pointer text-6xl font-normal duration-400 hover:translate-x-10"
+          >
+            Sign out
+          </div>
+        )}
       </div>
       <div className="mb-10 flex flex-col gap-0.5 px-7 lg:hidden">
-        <div className="text-gray-500" onClick={clickHandle}>
-          CONTACT US
-        </div>
+        <div className="text-gray-500">CONTACT US</div>
         <p className="font-semibold">pe@parfumelite.com</p>
         <p className="font-semibold">0000 - 1111 - 2222 </p>
       </div>

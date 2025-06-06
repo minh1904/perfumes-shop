@@ -15,14 +15,17 @@ const Navbar = () => {
         <MenuIcon />
       </div>
 
-      <Image
-        src="/logo.png"
-        alt="Logo ParfumÉlite"
-        width={0}
-        height={0}
-        sizes="100vw"
-        className="h-15 w-auto object-contain"
-      />
+      <Link href="/">
+        <Image
+          src="/logo.png"
+          alt="Logo ParfumÉlite"
+          width={0}
+          height={0}
+          sizes="100vw"
+          className="h-15 w-auto object-contain"
+        />
+      </Link>
+
       <div className="navbar_middle">
         <Link href="/shop">shop</Link>
         <Link href="/about">about</Link>

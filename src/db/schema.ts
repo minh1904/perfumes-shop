@@ -176,18 +176,18 @@ export const images = pgTable('images', {
 
 export const reviews = pgTable('reviews', {
   id: serial('id').primaryKey(),
-  user_id: integer('user_id').notNull(),
+  user_id: text('user_id').notNull(),
   product_id: integer('product_id')
     .references(() => products.id)
     .notNull(),
-  rating: integer('rating').notNull(), // 1-5
+  rating: integer('rating').notNull(),
   comment: text('comment'),
   created_at: timestamp('created_at').defaultNow(),
 });
 
 export const cartItems = pgTable('cart_items', {
   id: serial('id').primaryKey(),
-  user_id: integer('user_id').notNull(),
+  user_id: text('user_id').notNull(),
   variant_id: integer('variant_id')
     .references(() => productVariants.id)
     .notNull(),
@@ -197,7 +197,7 @@ export const cartItems = pgTable('cart_items', {
 
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
-  user_id: integer('user_id').notNull(),
+  user_id: text('user_id').notNull(),
   status: text('status').default('pending'), // pending, paid, shipped, delivered
   total_amount: decimal('total_amount', { precision: 10, scale: 2 }),
   created_at: timestamp('created_at').defaultNow(),

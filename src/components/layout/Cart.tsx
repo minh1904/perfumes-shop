@@ -1,11 +1,12 @@
 'use client';
 import { useCartStore, useMenuStore } from '@/stores';
-import { MoveRight, X } from 'lucide-react';
-import Link from 'next/link';
+import { X } from 'lucide-react';
+
 import React, { useEffect } from 'react';
+import CartItems from '../ui/CartItems';
 
 const Cart = () => {
-  const { isOpenCart, closeCart } = useCartStore();
+  const { isOpenCart, closeCart, items } = useCartStore();
   const { isOpenMenu } = useMenuStore();
   useEffect(() => {
     if (isOpenCart || isOpenMenu) {
@@ -23,7 +24,7 @@ const Cart = () => {
     >
       <div className="flex items-center justify-between px-12 py-10 text-5xl">
         <p className="relative font-normal">
-          Cart <span className="absolute text-[1.5rem]">(0)</span>
+          Cart <span className="absolute text-[1.5rem]">({items.length})</span>
         </p>
         <X
           size={40}
@@ -33,21 +34,7 @@ const Cart = () => {
         />
       </div>
 
-      <div className="flex h-[calc(100vh-19rem)] flex-col items-center justify-center text-center text-6xl">
-        <p className="mb-6 font-normal">
-          Your cart is <br />
-          <span className="font-roslindale-italic">empty</span>
-        </p>
-        <Link
-          href="/shop"
-          className="border-blacky relative flex items-center gap-2 rounded-full border px-20 py-4"
-        >
-          <p className="text-lg font-normal uppercase underline">Browse products</p>
-          <p className="bg-blacky absolute right-3 rounded-full p-3">
-            <MoveRight strokeWidth={1.25} className="text-white" />
-          </p>
-        </Link>
-      </div>
+      <CartItems />
     </div>
   );
 };
