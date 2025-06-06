@@ -101,26 +101,21 @@ export const useCartStore = create<CartStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          // Kiểm tra xem server có cart không
           const response = await axios.get(`/api/cart/${userId}/check`);
           const { hasCart, items: serverItems } = response.data;
 
           const localItems = get().items;
 
           if (!hasCart && localItems.length > 0) {
-            // Server chưa có cart, đồng bộ local lên server
             console.log('Server empty, syncing local cart to server...');
             await get().saveToServer(userId);
           } else if (hasCart && localItems.length === 0) {
-            // Local empty, server có data, lấy từ server
             console.log('Local empty, getting cart from server...');
             set({ items: serverItems });
           } else if (hasCart && localItems.length > 0) {
-            // Cả hai đều có data, ưu tiên server (hoặc có thể merge)
             console.log('Both have data, using server cart...');
             set({ items: serverItems });
           }
-          // Nếu cả hai đều empty thì không làm gì
         } catch (error) {
           console.error('Error syncing cart:', error);
           set({ error: 'Không thể đồng bộ giỏ hàng' });

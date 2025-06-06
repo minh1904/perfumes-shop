@@ -3,11 +3,31 @@
 import React, { useEffect, useState } from 'react';
 import { ShoppingBasket } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/types';
+import { useAddToCart } from '@/hooks/useCart';
 
 const TypeProduct = ({ product }: { product: Product }) => {
   const [typeSelected, setTypeSelected] = useState<ProductVariant | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const { mutate: addToCart, isPending } = useAddToCart();
 
+  const handleAddToCart = () => {
+    if (!typeSelected) return;
+
+    addToCart({
+      variant_id: typeSelected.id,
+      quantity,
+      productData: {
+        product_id: product.id,
+        product_name: product.name,
+        product_slug: product.slug,
+        brand_name: product.brand?.name ?? '',
+        volume_ml: typeSelected.volume_ml,
+        price: parseFloat(typeSelected.price),
+        sku: typeSelected.sku,
+        image_url: product.images && product.images.length > 0 ? product.images[0].url : undefined,
+      },
+    });
+  };
   const increase = () => {
     setQuantity(quantity + 1);
   };
@@ -82,7 +102,11 @@ const TypeProduct = ({ product }: { product: Product }) => {
       </div>
 
       {/* Add to cart button */}
-      <button className="flex w-full transform cursor-pointer items-center justify-center gap-3 rounded-full bg-rose-400 px-8 py-4 text-lg font-medium text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-rose-500 hover:shadow-xl">
+      <button
+        onClick={handleAddToCart}
+        disabled={isPending || !typeSelected}
+        className="flex w-full transform cursor-pointer items-center justify-center gap-3 rounded-full bg-rose-400 px-8 py-4 text-lg font-medium text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-rose-500 hover:shadow-xl"
+      >
         ADD TO CART
         <ShoppingBasket size={24} strokeWidth={1.5} />
       </button>

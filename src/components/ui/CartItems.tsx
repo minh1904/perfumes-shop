@@ -1,17 +1,18 @@
 'use client';
 
-import { useSyncCart, useUpdateCartQuantity } from '@/hooks/useCart';
+import { useRemoveFromCart, useSyncCart, useUpdateCartQuantity } from '@/hooks/useCart';
 import { CartItem, useCartStore } from '@/stores';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
+
 import { MoveRight, Trash2 } from 'lucide-react';
 
 const CartItems = () => {
   const { data: session } = useSession();
   const userId = session?.user?.id;
-
+  const { mutate: removeFromCart } = useRemoveFromCart();
   const { items: localItems } = useCartStore();
 
   const { mutate: syncCart } = useSyncCart();
@@ -60,10 +61,10 @@ const CartItems = () => {
               <p className="text-lg font-semibold">{item.product_name}</p>
               <p>
                 <Trash2
+                  onClick={() => removeFromCart(item.variant_id)}
                   size={20}
                   strokeWidth={1.25}
                   className="cursor-pointer"
-                  // Bạn có thể thêm onClick xóa item tại đây
                 />
               </p>
             </div>

@@ -57,7 +57,7 @@ export type Product = {
   slug: string;
   brand_id: number;
   category_id: number | null;
-  price: string;
+  price: number;
   discount: number | null;
   short_description: string | null;
   description: ProductDescription | null;

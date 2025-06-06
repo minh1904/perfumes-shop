@@ -22,7 +22,6 @@ interface AddToCartData {
 export const useAddToCart = () => {
   const { data: session } = useSession();
   const { addItem } = useCartStore();
-  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: AddToCartData) => {
@@ -40,7 +39,7 @@ export const useAddToCart = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      toast.success('Add product to cart successfully');
     },
     onError: (error) => {
       console.error('Error adding to cart:', error);
