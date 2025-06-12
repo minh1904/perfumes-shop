@@ -48,7 +48,7 @@ const Navbar = () => {
         <Link className={`${userId ? 'hidden' : ''}`} href="/login">
           <UserRound size={20} strokeWidth={1.25} className="cursor-pointer" />
         </Link>
-        <Link className={`${userId ? '' : 'hidden'}`} href="/profile">
+        <Link className={`${userId ? '' : 'hidden'}`} href="/account">
           <UserRound size={20} strokeWidth={1.25} className="cursor-pointer" />
         </Link>
       </div>

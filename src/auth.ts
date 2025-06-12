@@ -31,6 +31,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.role = token.role;
       return session;
     },
+    signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        return !!profile?.email_verified;
+      }
+      if (account?.provider === 'credentials') {
+        if (user.emailVerified) {
+        }
+        return true;
+      }
+      return false;
+    },
   },
   events: {
     async linkAccount({ user, account }) {

@@ -1,17 +1,20 @@
 'use client';
 
 import { signoutUserAction } from '@/actions/sign-out-action';
-import { useMenuStore } from '@/stores';
+import { useCartStore, useMenuStore } from '@/stores';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
 const Menu = () => {
   const { isOpenMenu, closeMenu } = useMenuStore();
+  const { clearCart } = useCartStore();
   const { data: session } = useSession();
   const clickHandle = async () => {
     await signoutUserAction();
     closeMenu();
+    clearCart();
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -68,7 +71,7 @@ const Menu = () => {
         )}
         {session?.user?.id && (
           <Link
-            href="/profile"
+            href="/account"
             onClick={clickHandle}
             className="cursor-pointer text-6xl font-normal duration-400 hover:translate-x-10"
           >

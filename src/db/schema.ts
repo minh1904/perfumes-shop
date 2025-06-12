@@ -224,3 +224,20 @@ export const wishlists = pgTable('wishlists', {
     .notNull(),
   created_at: timestamp('created_at').defaultNow(),
 });
+export const addresses = pgTable('addresses', {
+  id: serial('id').primaryKey(),
+  user_id: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  full_name: text('full_name').notNull(),
+  phone_number: varchar('phone_number', { length: 20 }).notNull(),
+  address_line1: text('address_line1').notNull(),
+  address_line2: text('address_line2'),
+  city: text('city').notNull(),
+  state: text('state'),
+  postal_code: varchar('postal_code', { length: 20 }),
+  country: text('country').notNull(),
+  is_default: boolean('is_default').default(false),
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow(),
+});

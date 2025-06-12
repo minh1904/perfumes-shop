@@ -34,6 +34,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
     if (res.success) {
       toast.success('Thanks for login');
       router.push('/');
+      window.location.reload();
     } else {
       switch (res.statusCode) {
         case 401:

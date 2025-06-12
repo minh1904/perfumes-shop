@@ -10,13 +10,14 @@ import { useForm } from 'react-hook-form';
 import { signupUserAction } from '@/actions/signup-user-action';
 import { toast } from 'sonner';
 import { oauthLoginAction } from '@/actions/oauth-login-action';
+import { useRouter } from 'next/navigation';
+
 export default function SignupForm({ className, ...props }: React.ComponentProps<'form'>) {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-    reset,
   } = useForm<TsignupSchema>({
     resolver: zodResolver(signupSchema),
     defaultValues: { email: '', password: '', name: '' },
@@ -25,12 +26,14 @@ export default function SignupForm({ className, ...props }: React.ComponentProps
   const clickHandle = async (provider: 'google') => {
     await oauthLoginAction(provider);
   };
+  const router = useRouter();
 
   const onSubmit = async (data: TsignupSchema) => {
     const res = await signupUserAction(data);
 
     if (res.success) {
-      reset();
+      router.push('/login');
+
       toast.success('Sign up Successfully please login :D');
     } else {
       switch (res.statusCode) {
