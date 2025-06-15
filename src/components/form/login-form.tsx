@@ -1,5 +1,4 @@
 'use client';
-import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -26,15 +25,13 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
     await oauthLoginAction(provider);
   };
 
-  const router = useRouter();
-
   const onSubmit = async (data: TloginSchema) => {
     const res = await loginUserAction(data);
 
     if (res.success) {
       toast.success('Thanks for login');
-      router.push('/');
-      window.location.reload();
+
+      window.location.href = '/';
     } else {
       switch (res.statusCode) {
         case 401:

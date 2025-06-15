@@ -143,7 +143,7 @@ export async function getFilterOptions() {
 
   return {
     brands: brandsList,
-    genders: gendersList.map((g) => g.gender).filter(Boolean),
+    genders: gendersList.map((g) => g.gender).filter(Boolean) as string[],
   };
 }
 
