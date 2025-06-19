@@ -2,10 +2,13 @@ import { db } from '@/db/db';
 import { productVariants } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
-
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+type Props = {
+  params: Promise<{ id: string }>;
+};
+export async function PUT(req: Request, { params }: Props}) {
   try {
-    const id = Number(params.id);
+    const param = await params
+    const id = Number(param.id);
     const body = await req.json();
     const { volume_ml, sku, price, stock } = body;
 
