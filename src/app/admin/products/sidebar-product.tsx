@@ -29,6 +29,7 @@ import { Product } from './product-table';
 import { DialogVariantForm } from './dialog-varient';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import Upload from '@/components/upload';
 
 interface SidebarProductProps {
   product: Product;
@@ -217,6 +218,7 @@ const SidebarProduct = ({ product, refetch }: SidebarProductProps) => {
             />
           </div>
         </div>
+        <Upload />
 
         <SheetFooter>
           <Button type="button" onClick={handleManualSave}>

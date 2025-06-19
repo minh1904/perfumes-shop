@@ -27,9 +27,10 @@ export async function PUT(req: Request, { params }: Props) {
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_: Request, { params }: Props) {
   try {
-    const id = Number(params.id);
+    const param = await params;
+    const id = Number(param.id);
     await db.delete(productVariants).where(eq(productVariants.id, id));
     return NextResponse.json({ success: true });
   } catch (err) {

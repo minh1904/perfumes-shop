@@ -6,7 +6,7 @@ import React from 'react';
 const Upload = () => {
   return (
     <div>
-      <CldUploadWidget uploadPreset="<Your Upload Preset>">
+      <CldUploadWidget uploadPreset="ml_default">
         {({ open }) => {
           return <button onClick={() => open()}>Upload an Image</button>;
         }}

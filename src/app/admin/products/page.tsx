@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import ProductTable from './product-table';
+import Upload from '@/components/upload';
 
 export default function AdminProductsPage() {
   const [search, setSearch] = useState('');
@@ -9,6 +10,7 @@ export default function AdminProductsPage() {
   return (
     <div className="px-5">
       <h1 className="mb-4 text-2xl font-bold">Products</h1>
+      <Upload></Upload>
       <Input
         className="mb-4 rounded-sm p-2"
         placeholder="Search product"
