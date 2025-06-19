@@ -90,9 +90,11 @@ export async function GET(req: Request) {
           slug: row.products.slug,
           price: row.products.price,
           gender: row.products.gender,
+          short_description: row.products.short_description,
           discount: row.products.discount,
           status: row.products.status,
           brand: row.brands?.name ?? null,
+          brand_id: row.products.brand_id, // ✅ thêm dòng này để SidebarProduct hoạt động đúng
           category: row.categories?.name ?? null,
           image_url: primaryImage[0]?.url ?? null,
           variants: variants.map((v) => ({

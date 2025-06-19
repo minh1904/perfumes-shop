@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useDebounce } from '@/hooks/use-debounce';
+import SidebarProduct from './sidebar-product';
 
 interface ProductVariant {
   id: number;
@@ -24,18 +25,21 @@ interface ProductVariant {
   stock: number;
 }
 
-interface Product {
+export interface Product {
   id: number;
   name: string;
   slug: string;
   price: number;
   discount: number | null;
+  short_description: string | null;
   status: boolean | null;
-  brand: string | null;
+  brand?: string | null;
+  brand_id: number;
   category: string | null;
   image_url: string | null;
   gender: string | null;
   variants: ProductVariant[];
+  sale_count: number;
 }
 
 interface Pagination {
@@ -172,7 +176,12 @@ export default function ProductTable({ externalSearch = '' }: { externalSearch?:
             <div className="flex items-start justify-between gap-4">
               <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-md border">
                 <Image
-                  src={product.image_url || '/placeholder.png'}
+                  src={
+                    product.image_url &&
+                    (product.image_url.startsWith('/') || product.image_url.startsWith('http'))
+                      ? product.image_url
+                      : '/placeholder.png'
+                  }
                   alt={product.name}
                   className="h-full w-full object-cover"
                   width={600}
@@ -192,9 +201,13 @@ export default function ProductTable({ externalSearch = '' }: { externalSearch?:
                       <ChevronDown className="text-muted-foreground h-4 w-4" />
                     )}
                   </div>
-                  <Badge variant={product.status ? 'outline' : 'destructive'}>
-                    {product.status ? 'Active' : 'Inactive'}
-                  </Badge>
+                  <div className="flex items-center gap-3">
+                    {' '}
+                    <Badge variant={product.status ? 'outline' : 'destructive'}>
+                      {product.status ? 'Active' : 'Inactive'}
+                    </Badge>
+                    <SidebarProduct product={product} />
+                  </div>
                 </div>
                 <p className="text-muted-foreground text-sm">
                   {product.brand} •{' '}

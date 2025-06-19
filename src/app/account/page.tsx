@@ -1,6 +1,7 @@
 'use client';
 import { signoutUserAction } from '@/actions/sign-out-action';
 import Adresses from '@/components/account/Adresses';
+import { useCartStore } from '@/stores';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 
@@ -10,15 +11,15 @@ const select = [
   { select: 'Orders', label: 'orders' },
 ];
 
-const clickHandle = async () => {
-  await signoutUserAction();
-  window.location.href = '/';
-};
-
 const Page = () => {
   const [selected, setSelected] = useState<string>('contact-information');
   const { data: session } = useSession();
-
+  const { clearCart } = useCartStore();
+  const clickHandle = async () => {
+    await signoutUserAction();
+    clearCart();
+    window.location.href = '/';
+  };
   return (
     <div className="mx-5 min-h-screen py-5">
       <p className="mt-20 text-xl font-medium">Welcome, {session?.user?.name}!</p>
