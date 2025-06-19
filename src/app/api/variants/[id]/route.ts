@@ -5,9 +5,9 @@ import { NextResponse } from 'next/server';
 type Props = {
   params: Promise<{ id: string }>;
 };
-export async function PUT(req: Request, { params }: Props}) {
+export async function PUT(req: Request, { params }: Props) {
   try {
-    const param = await params
+    const param = await params;
     const id = Number(param.id);
     const body = await req.json();
     const { volume_ml, sku, price, stock } = body;
