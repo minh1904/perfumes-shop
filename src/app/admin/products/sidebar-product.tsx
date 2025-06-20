@@ -83,7 +83,11 @@ const SidebarProduct = ({ product, refetch }: SidebarProductProps) => {
           <EllipsisVertical strokeWidth={1.5} />
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex min-w-xl flex-col">
+      <SheetContent
+        className="flex min-w-xl flex-col"
+        onInteractOutside={(e) => e.preventDefault()} // Ngăn đóng khi click ra ngoài
+        onEscapeKeyDown={(e) => e.preventDefault()} // Ngăn đóng khi bấm Esc
+      >
         <SheetHeader>
           <SheetTitle>Edit product</SheetTitle>
           <SheetDescription>
@@ -218,7 +222,9 @@ const SidebarProduct = ({ product, refetch }: SidebarProductProps) => {
             />
           </div>
         </div>
-        <Upload />
+        <div>
+          <Upload />
+        </div>
 
         <SheetFooter>
           <Button type="button" onClick={handleManualSave}>

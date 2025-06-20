@@ -1,18 +1,15 @@
 'use client';
+
 import { CldUploadWidget } from 'next-cloudinary';
 
-import React from 'react';
-
-const Upload = () => {
+export default function CloudinaryRealWidget() {
   return (
-    <div>
-      <CldUploadWidget uploadPreset="ml_default">
-        {({ open }) => {
-          return <button onClick={() => open()}>Upload an Image</button>;
-        }}
-      </CldUploadWidget>
-    </div>
+    <CldUploadWidget uploadPreset="ml_default">
+      {({ open }) => (
+        <button type="button" onClick={() => open()}>
+          Upload
+        </button>
+      )}
+    </CldUploadWidget>
   );
-};
-
-export default Upload;
+}
