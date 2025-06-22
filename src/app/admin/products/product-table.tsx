@@ -2,7 +2,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import {
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useDebounce } from '@/hooks/use-debounce';
 import SidebarProduct from './sidebar-product';
+import EditProductImagesDialog from './EditProductImagesDialog';
 
 interface ProductVariant {
   id: number;
@@ -36,7 +37,7 @@ export interface Product {
   brand?: string | null;
   brand_id: number;
   category: string | null;
-  image_url: string | null;
+  image_url: string[];
   gender: string | null;
   variants: ProductVariant[];
   sale_count: number;
@@ -58,6 +59,7 @@ interface ProductResponse {
 }
 
 export default function ProductTable({ externalSearch = '' }: { externalSearch?: string }) {
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [gender, setGender] = useState<'all' | 'male' | 'female' | 'unisex'>('all');
@@ -176,12 +178,15 @@ export default function ProductTable({ externalSearch = '' }: { externalSearch?:
             <div className="flex items-start justify-between gap-4">
               <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-md border">
                 <Image
-                  src={
-                    product.image_url &&
-                    (product.image_url.startsWith('/') || product.image_url.startsWith('http'))
-                      ? product.image_url
-                      : '/placeholder.png'
-                  }
+                  src={(() => {
+                    if (!product.image_url) return '/placeholder.png';
+                    if (Array.isArray(product.image_url)) {
+                      return product.image_url.length > 0
+                        ? product.image_url[0]
+                        : '/placeholder.png';
+                    }
+                    return product.image_url;
+                  })()}
                   alt={product.name}
                   className="h-full w-full object-cover"
                   width={600}
@@ -206,6 +211,10 @@ export default function ProductTable({ externalSearch = '' }: { externalSearch?:
                     <Badge variant={product.status ? 'outline' : 'destructive'}>
                       {product.status ? 'Active' : 'Inactive'}
                     </Badge>
+                    <EditProductImagesDialog
+                      product={product}
+                      onUpdated={() => queryClient.invalidateQueries({ queryKey: ['products'] })}
+                    />
                     <SidebarProduct product={product} />
                   </div>
                 </div>

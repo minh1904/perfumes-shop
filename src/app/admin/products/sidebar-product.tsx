@@ -29,7 +29,6 @@ import { Product } from './product-table';
 import { DialogVariantForm } from './dialog-varient';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
-import Upload from '@/components/upload';
 
 interface SidebarProductProps {
   product: Product;
@@ -39,7 +38,7 @@ interface SidebarProductProps {
 const SidebarProduct = ({ product, refetch }: SidebarProductProps) => {
   const [name, setName] = useState(product.name);
   const [slug, setSlug] = useState(product.slug);
-  const [brandId, setBrandId] = useState(product.brand_id?.toString() ?? ''); // ✅ fixed here
+  const [brandId, setBrandId] = useState(product.brand_id?.toString() ?? '');
   const [saleCount, setSaleCount] = useState(product.sale_count?.toString() ?? '0');
   const [description, setDescription] = useState(product.short_description ?? '');
   const [isActive, setIsActive] = useState(product.status ?? false);
@@ -83,11 +82,7 @@ const SidebarProduct = ({ product, refetch }: SidebarProductProps) => {
           <EllipsisVertical strokeWidth={1.5} />
         </Button>
       </SheetTrigger>
-      <SheetContent
-        className="flex min-w-xl flex-col"
-        onInteractOutside={(e) => e.preventDefault()} // Ngăn đóng khi click ra ngoài
-        onEscapeKeyDown={(e) => e.preventDefault()} // Ngăn đóng khi bấm Esc
-      >
+      <SheetContent className="flex min-w-xl flex-col">
         <SheetHeader>
           <SheetTitle>Edit product</SheetTitle>
           <SheetDescription>
@@ -221,9 +216,6 @@ const SidebarProduct = ({ product, refetch }: SidebarProductProps) => {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-        </div>
-        <div>
-          <Upload />
         </div>
 
         <SheetFooter>
