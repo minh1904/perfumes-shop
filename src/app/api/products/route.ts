@@ -14,6 +14,7 @@ export async function POST(req: Request) {
       sale_count,
       gender,
       status,
+      price,
       product_variants, // danh sách biến thể gửi kèm
     } = body;
 
@@ -32,6 +33,7 @@ export async function POST(req: Request) {
         short_description,
         sale_count,
         gender,
+        price,
         status,
       })
       .returning();
@@ -39,13 +41,20 @@ export async function POST(req: Request) {
     // Nếu có variants thì thêm luôn
     if (Array.isArray(product_variants)) {
       await db.insert(productVariants).values(
-        product_variants.map((v: any) => ({
-          product_id: product.id,
-          volume_ml: Number(v.volume_ml),
-          sku: String(v.sku),
-          price: String(v.price),
-          stock: Number(v.stock),
-        })),
+        product_variants.map(
+          (v: {
+            volume_ml: number | string;
+            sku: string;
+            price: string | number;
+            stock: number | string;
+          }) => ({
+            product_id: product.id,
+            volume_ml: Number(v.volume_ml),
+            sku: String(v.sku),
+            price: String(v.price),
+            stock: Number(v.stock),
+          }),
+        ),
       );
     }
 

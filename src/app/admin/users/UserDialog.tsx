@@ -65,7 +65,7 @@ export function UserDialog({ open, onOpenChange, onSuccess, initialData }: UserD
       const method = initialData ? 'PUT' : 'POST';
       const url = initialData ? `/api/users/${initialData.id}` : '/api/users';
 
-      const body: any = {
+      const body: Partial<UserFormData> = {
         name: form.name,
         email: form.email,
         role: form.role,
@@ -87,6 +87,7 @@ export function UserDialog({ open, onOpenChange, onSuccess, initialData }: UserD
       onOpenChange(false);
       onSuccess();
     } catch (err) {
+      console.log(err);
       toast.error('Operation failed');
     } finally {
       setLoading(false);

@@ -1,11 +1,13 @@
 import { db } from '@/db/db';
-import { products } from '@/db/schema';
+import { products, productVariants, images } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
+
 type Props = {
   params: Promise<{ id: string }>;
 };
 
+// PATCH: Cập nhật sản phẩm
 export async function PATCH(req: Request, { params }: Props) {
   try {
     const param = await params;
@@ -29,6 +31,28 @@ export async function PATCH(req: Request, { params }: Props) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('PATCH /products/:id error:', error);
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+// DELETE: Xoá sản phẩm và các dữ liệu liên quan
+export async function DELETE(_: Request, { params }: Props) {
+  try {
+    const param = await params;
+    const id = Number(param.id);
+
+    // Xoá các variants
+    await db.delete(productVariants).where(eq(productVariants.product_id, id));
+
+    // Xoá ảnh sản phẩm nếu có
+    await db.delete(images).where(eq(images.product_id, id));
+
+    // Xoá sản phẩm
+    await db.delete(products).where(eq(products.id, id));
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('DELETE /products/:id error:', error);
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -1,5 +1,5 @@
-// Full version of AddProductDialog with variant management like edit screen
-import { useState } from 'react';
+// AddProductDialog.tsx
+import { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -13,9 +13,9 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { useQuery } from '@tanstack/react-query';
 
 interface Brand {
   id: number;
@@ -30,8 +30,8 @@ interface Variant {
 
 export default function AddProductDialog() {
   const [show, setShow] = useState(false);
+  const [, setProductId] = useState<number | null>(null);
   const [variants, setVariants] = useState<Variant[]>([]);
-
   const [form, setForm] = useState({
     name: '',
     slug: '',
@@ -68,8 +68,18 @@ export default function AddProductDialog() {
     setVariants(variants.filter((_, i) => i !== index));
   };
 
+  const minPrice = useMemo(() => {
+    if (variants.length === 0) return 0;
+    return Math.min(...variants.map((v) => Number(v.price || 0)));
+  }, [variants]);
+
   const handleSubmit = async () => {
     try {
+      if (variants.length === 0) {
+        toast.error('Please add at least one variant');
+        return;
+      }
+
       const res = await axios.post('/api/products', {
         name: form.name,
         slug: form.slug,
@@ -78,10 +88,23 @@ export default function AddProductDialog() {
         sale_count: Number(form.saleCount),
         gender: form.gender,
         status: form.isActive,
-        product_variants: variants,
+        price: minPrice,
       });
 
+      const id = res.data?.data?.id;
+      setProductId(id);
       toast.success('Product created successfully');
+
+      for (const v of variants) {
+        await axios.post('/api/variants', {
+          product_id: id,
+          volume_ml: Number(v.volume_ml),
+          sku: v.sku,
+          price: Number(v.price),
+          stock: Number(v.stock),
+        });
+      }
+
       window.location.reload();
     } catch (err) {
       toast.error('Failed to create product');
@@ -178,13 +201,16 @@ export default function AddProductDialog() {
                       onChange={(e) => handleVariantChange(i, 'stock', e.target.value)}
                     />
                     <Button size="sm" variant="destructive" onClick={() => handleRemoveVariant(i)}>
-                      Delete
+                      Remove
                     </Button>
                   </div>
                 ))}
                 <Button variant="outline" onClick={handleAddVariant}>
-                  + Add variant
+                  + Add Variant
                 </Button>
+                <p className="text-muted-foreground text-sm">
+                  Min Price: <strong>{minPrice.toFixed(2)}</strong>
+                </p>
               </div>
             </div>
           </div>

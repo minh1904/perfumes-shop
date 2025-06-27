@@ -151,6 +151,7 @@ export const products = pgTable('products', {
   created_at: timestamp('created_at').defaultNow(),
   updated_at: timestamp('updated_at').defaultNow(),
   sale_count: numeric('sale_count').default('0'),
+  price: decimal('price', { precision: 10, scale: 2 }),
 });
 
 export const productVariants = pgTable('product_variants', {

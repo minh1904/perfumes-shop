@@ -17,6 +17,19 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useDebounce } from '@/hooks/use-debounce';
 import SidebarProduct from './sidebar-product';
 import EditProductImagesDialog from './EditProductImagesDialog';
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog';
+
+import { toast } from 'sonner';
 
 interface ProductVariant {
   id: number;
@@ -176,6 +189,7 @@ export default function ProductTable({ externalSearch = '' }: { externalSearch?:
         <Card key={product.id} className="shadow">
           <CardContent>
             <div className="flex items-start justify-between gap-4">
+              {/* Hình ảnh sản phẩm */}
               <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-md border">
                 <Image
                   src={(() => {
@@ -193,8 +207,11 @@ export default function ProductTable({ externalSearch = '' }: { externalSearch?:
                   height={600}
                 />
               </div>
+
+              {/* Thông tin và nút hành động */}
               <div className="flex-1">
                 <div className="flex items-center justify-between">
+                  {/* Tên sản phẩm và toggle chi tiết */}
                   <div
                     className="flex cursor-pointer items-center gap-2"
                     onClick={() => setExpandedId(expandedId === product.id ? null : product.id)}
@@ -206,18 +223,62 @@ export default function ProductTable({ externalSearch = '' }: { externalSearch?:
                       <ChevronDown className="text-muted-foreground h-4 w-4" />
                     )}
                   </div>
+
+                  {/* Nhóm nút hành động */}
                   <div className="flex items-center gap-3">
-                    {' '}
                     <Badge variant={product.status ? 'outline' : 'destructive'}>
                       {product.status ? 'Active' : 'Inactive'}
                     </Badge>
+
                     <EditProductImagesDialog
                       product={product}
                       onUpdated={() => queryClient.invalidateQueries({ queryKey: ['products'] })}
                     />
-                    <SidebarProduct product={product} />
+
+                    <SidebarProduct
+                      product={product}
+                      refetch={() => queryClient.invalidateQueries({ queryKey: ['products'] })}
+                    />
+
+                    {/* Nút xoá sản phẩm */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                          Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete the product {product.name}.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-600 text-white hover:bg-red-700"
+                            onClick={async () => {
+                              try {
+                                await axios.delete(`/api/products/${product.id}`);
+                                toast.success('Product deleted successfully');
+                                window.location.reload();
+                                queryClient.invalidateQueries({ queryKey: ['products'] });
+                              } catch (err) {
+                                console.error('Failed to delete product', err);
+                                toast.error('Failed to delete product');
+                              }
+                            }}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
+
+                {/* Mô tả ngắn */}
                 <p className="text-muted-foreground text-sm">
                   {product.brand} •{' '}
                   {product.gender
@@ -225,6 +286,7 @@ export default function ProductTable({ externalSearch = '' }: { externalSearch?:
                     : ''}
                 </p>
 
+                {/* Chi tiết variant nếu được mở rộng */}
                 {expandedId === product.id && (
                   <div className="mt-4">
                     <p className="text-muted-foreground mb-1 text-sm font-medium">Variants:</p>
