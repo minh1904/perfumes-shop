@@ -35,6 +35,7 @@ export const users = pgTable(
     image: text('image'),
     password: text('password'),
     role: roleEnum('role').notNull().default('user'),
+    created_at: timestamp('created_at').defaultNow(),
   },
   (table) => [uniqueIndex('emailUniqueIndex').on(lower(table.email))],
 );

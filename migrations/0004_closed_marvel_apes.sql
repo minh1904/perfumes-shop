@@ -1,1 +1,0 @@
-ALTER TABLE "products" ADD COLUMN "sale_count" numeric DEFAULT '0';
