@@ -139,7 +139,6 @@ export const products = pgTable('products', {
     .references(() => brands.id)
     .notNull(),
   category_id: integer('category_id').references(() => categories.id),
-  price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   discount: doublePrecision('discount').default(0),
   short_description: text('short_description'),
   description: jsonb('description').$type<ProductDescription | null>(),

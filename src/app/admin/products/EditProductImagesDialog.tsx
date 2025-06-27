@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-
 import { Edit, Trash2, X, Upload } from 'lucide-react';
 import Image from 'next/image';
 import { CldUploadWidget } from 'next-cloudinary';
@@ -36,7 +35,7 @@ export default function EditProductImagesDialog({
       }
     } catch (error) {
       console.error('Error loading images:', error);
-      toast.error('Không thể tải danh sách ảnh');
+      toast.error('Failed to load image list');
     }
   }, [product.id]);
 
@@ -71,7 +70,7 @@ export default function EditProductImagesDialog({
         });
 
         if (response.ok) {
-          toast.success(`Upload ${isPrimary ? 'ảnh chính' : 'ảnh phụ'} thành công`);
+          toast.success(`Successfully uploaded ${isPrimary ? 'primary' : 'secondary'} image`);
           await loadProductImages();
           onUpdated?.();
         } else {
@@ -82,7 +81,7 @@ export default function EditProductImagesDialog({
       }
     } catch (error) {
       console.error('Error saving image:', error);
-      toast.error('Không thể lưu ảnh vào database');
+      toast.error('Failed to save image to database');
     } finally {
       setIsLoading(false);
     }
@@ -103,14 +102,14 @@ export default function EditProductImagesDialog({
         });
 
         await loadProductImages();
-        toast.success('Xóa ảnh thành công');
+        toast.success('Image deleted successfully');
         onUpdated?.();
       } else {
         throw new Error('Failed to delete image');
       }
     } catch (error) {
       console.error('Error deleting image:', error);
-      toast.error('Không thể xóa ảnh');
+      toast.error('Failed to delete image');
     } finally {
       setIsLoading(false);
     }
@@ -138,16 +137,16 @@ export default function EditProductImagesDialog({
             </button>
 
             <div className="space-y-4">
-              <h2 className="text-xl font-bold">Quản lý ảnh sản phẩm: {product.name}</h2>
+              <h2 className="text-xl font-bold">Manage Product Images: {product.name}</h2>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Ảnh chính</h3>
+                  <h3 className="text-sm font-medium">Primary Image</h3>
                   {primaryImage ? (
                     <div className="relative w-full">
                       <Image
                         src={primaryImage.url}
-                        alt="Ảnh chính"
+                        alt="Primary image"
                         width={300}
                         height={300}
                         className="mb-2 rounded border object-cover"
@@ -163,7 +162,7 @@ export default function EditProductImagesDialog({
                       </Button>
                     </div>
                   ) : (
-                    <p className="text-muted-foreground text-sm">Chưa có ảnh chính</p>
+                    <p className="text-muted-foreground text-sm">No primary image</p>
                   )}
                   <CldUploadWidget
                     uploadPreset="ml_default"
@@ -171,21 +170,21 @@ export default function EditProductImagesDialog({
                   >
                     {({ open }) => (
                       <Button onClick={() => open()} className="w-full" disabled={isLoading}>
-                        <Upload className="mr-2 h-4 w-4" /> Upload ảnh chính mới
+                        <Upload className="mr-2 h-4 w-4" /> Upload New Primary Image
                       </Button>
                     )}
                   </CldUploadWidget>
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Ảnh phụ</h3>
+                  <h3 className="text-sm font-medium">Secondary Images</h3>
                   {secondaryImages.length > 0 ? (
                     <div className="grid grid-cols-2 gap-2">
                       {secondaryImages.map((img) => (
                         <div key={img.id} className="relative">
                           <Image
                             src={img.url}
-                            alt="Ảnh phụ"
+                            alt="Secondary image"
                             width={150}
                             height={150}
                             className="rounded border object-cover"
@@ -203,7 +202,7 @@ export default function EditProductImagesDialog({
                       ))}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground text-sm">Chưa có ảnh phụ</p>
+                    <p className="text-muted-foreground text-sm">No secondary images</p>
                   )}
                   <CldUploadWidget
                     uploadPreset="ml_default"
@@ -211,7 +210,7 @@ export default function EditProductImagesDialog({
                   >
                     {({ open }) => (
                       <Button onClick={() => open()} className="w-full" disabled={isLoading}>
-                        <Upload className="mr-2 h-4 w-4" /> Upload ảnh phụ mới
+                        <Upload className="mr-2 h-4 w-4" /> Upload New Secondary Image
                       </Button>
                     )}
                   </CldUploadWidget>
