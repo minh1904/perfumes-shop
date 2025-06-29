@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import ProductTable from './product-table';
 import AddProductDialog from './AddProductDialog';
+import { AddBrand } from './AddBrand';
 
 export default function AdminProductsPage() {
   const [search, setSearch] = useState('');
@@ -11,7 +12,10 @@ export default function AdminProductsPage() {
     <div className="px-5">
       <div className="flex justify-between">
         <h1 className="mb-4 text-2xl font-bold">Products</h1>
-        <AddProductDialog />
+        <div className="flex gap-3">
+          <AddBrand />
+          <AddProductDialog />
+        </div>
       </div>
 
       <Input
