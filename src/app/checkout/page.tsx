@@ -5,10 +5,15 @@ import { ChevronUp, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 
+import { Elements } from "@stripe/react-stripe-js"
+import { loadStripe } from "@stripe/stripe-js"
+import CheckoutPage from "@/components/checkoutPage";
+import convertToSubcurrency from "@/lib/convertToSubcurrency";
+
 const Page = () => {
   const { getTotalPrice } = useCartStore();
   const [isOpen, setIsOpen] = useState(false);
-
+  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || "")
   return (
     <div className="min-h-screen bg-white">
       {/* Order Summary full width bg */}
@@ -128,8 +133,16 @@ const Page = () => {
         <span className="px-4">OR</span>
         <hr className="flex-grow border-t border-gray-300" />
       </div>
+      <div className='mx-auto mt-5 max-w-[40rem] px-5'> <Elements stripe={stripePromise} options={{
+        mode: "payment",
+        amount: convertToSubcurrency(getTotalPrice()),
+        currency: "usd",
+      }}>
+        <CheckoutPage amount={getTotalPrice()} />
+      </Elements></div>
     </div>
   );
 };
 
 export default Page;
+
