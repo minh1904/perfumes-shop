@@ -58,6 +58,7 @@ export function UserTable({ users, onUpdated }: { users: User[]; onUpdated: () =
       toast.success('User deleted');
       onUpdated();
     } catch (e) {
+      console.log(e);
       toast.error('Failed to delete user');
     }
   };

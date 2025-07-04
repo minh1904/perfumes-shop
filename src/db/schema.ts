@@ -196,11 +196,32 @@ export const cartItems = pgTable('cart_items', {
   added_at: timestamp('added_at').defaultNow(),
 });
 
+export const orderStatusEnum = pgEnum('order_status', ['pending', 'paid', 'shipped', 'delivered']);
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
-  user_id: text('user_id').notNull(),
-  status: text('status').default('pending'), // pending, paid, shipped, delivered
+  user_id: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+
+  // Trạng thái đơn hàng
+  status: orderStatusEnum('status').default('pending'),
+
+  // Tổng tiền
   total_amount: decimal('total_amount', { precision: 10, scale: 2 }),
+
+  // Snapshot địa chỉ tại thời điểm đặt hàng
+  shipping_full_name: text('shipping_full_name').notNull(),
+  shipping_phone: varchar('shipping_phone', { length: 20 }).notNull(),
+  shipping_address_line1: text('shipping_address_line1').notNull(),
+  shipping_address_line2: text('shipping_address_line2'),
+  shipping_city: text('shipping_city').notNull(),
+  shipping_state: text('shipping_state'),
+  shipping_postal_code: varchar('shipping_postal_code', { length: 20 }),
+  shipping_country: text('shipping_country').notNull(),
+
+  // Optional: lưu `address_id` để tiện tham chiếu (không bắt buộc)
+  address_id: serial('address_id'),
+
   created_at: timestamp('created_at').defaultNow(),
   updated_at: timestamp('updated_at').defaultNow(),
 });

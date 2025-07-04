@@ -3,146 +3,228 @@
 import { useCartStore } from '@/stores';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import CheckoutPage from '@/components/checkoutPage';
+import convertToSubcurrency from '@/lib/convertToSubcurrency';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 
-import { Elements } from "@stripe/react-stripe-js"
-import { loadStripe } from "@stripe/stripe-js"
-import CheckoutPage from "@/components/checkoutPage";
-import convertToSubcurrency from "@/lib/convertToSubcurrency";
+type Address = {
+  full_name: string;
+  phone_number: string;
+  address_line1: string;
+  address_line2?: string;
+  city: string;
+  state?: string;
+  postal_code?: string;
+  country: string;
+};
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || '');
 
 const Page = () => {
-  const { getTotalPrice } = useCartStore();
-  const [isOpen, setIsOpen] = useState(false);
-  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || "")
+  const { getTotalPrice, items: localItems } = useCartStore();
+  const [isOpen, setIsOpen] = useState(true);
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isValid },
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      street: '',
+      city: '',
+      state: '',
+      zip: '',
+      country: 'Vietnam',
+    },
+  });
+
+  const [addressData, setAddressData] = useState<Address | null>(null);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchAddress = async () => {
+      try {
+        const res = await fetch(`/api/adresses/${userId}`);
+        if (!res.ok) throw new Error('Failed to fetch address');
+        const data = await res.json();
+
+        const [firstName, ...lastParts] = data.full_name?.split(' ') || [''];
+        reset({
+          firstName,
+          lastName: lastParts.join(' '),
+          email: '',
+          phone: data.phone_number || '',
+          street: data.address_line1 || '',
+          city: data.city || '',
+          state: data.state || '',
+          zip: data.postal_code || '',
+          country: data.country || 'Vietnam',
+        });
+
+        // Lưu lại address để truyền sang CheckoutPage
+        setAddressData({
+          full_name: data.full_name,
+          phone_number: data.phone_number,
+          address_line1: data.address_line1,
+          address_line2: '',
+          city: data.city,
+          state: data.state,
+          postal_code: data.postal_code,
+          country: data.country || 'Vietnam',
+        });
+      } catch (err) {
+        toast.warning('Could not load saved address.');
+        console.error(err);
+      }
+    };
+
+    fetchAddress();
+  }, [userId, reset]);
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Order Summary full width bg */}
-      <div className="w-full bg-[#F6F6F6]">
-        <div
-          className="mx-auto flex h-18 max-w-[40rem] cursor-pointer items-center justify-between border-y border-gray-200 px-5"
-          onClick={() => setIsOpen((prev) => !prev)}
-        >
-          <p className="flex items-center gap-2 text-base font-medium">
-            Order summary
-            <span>
-              {isOpen ? <ChevronUp strokeWidth={1.25} /> : <ChevronDown strokeWidth={1.25} />}
-            </span>
-          </p>
+    <div className="flex min-h-screen flex-col bg-white md:flex-row">
+      <div className="max-h-screen w-full overflow-y-auto border-r border-gray-200 md:w-2/3">
+        <div className="sticky top-0 z-10 w-full bg-[#F6F6F6]">
+          <div
+            className="mx-auto flex h-18 max-w-[70rem] cursor-pointer items-center justify-between border-y border-gray-200 px-6 py-4"
+            onClick={() => setIsOpen((prev) => !prev)}
+          >
+            <p className="flex items-center gap-2 text-lg font-semibold">
+              Order summary
+              <span>
+                {isOpen ? <ChevronUp strokeWidth={1.25} /> : <ChevronDown strokeWidth={1.25} />}
+              </span>
+            </p>
+            <p className="text-xl font-bold text-gray-800">${getTotalPrice().toFixed(2)}</p>
+          </div>
+        </div>
 
-          <p className="text-xl font-semibold">{getTotalPrice()} $</p>
+        <div className="w-full bg-white">
+          <AnimatePresence initial={false}>
+            {isOpen && (
+              <motion.div
+                layout
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mx-auto max-w-[70rem] divide-y divide-gray-200 px-6"
+              >
+                {localItems.length > 0 ? (
+                  localItems.map((item) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex flex-col items-center justify-between gap-4 py-6 md:flex-row"
+                    >
+                      <div className="flex w-full items-center gap-4 md:w-2/3">
+                        <Image
+                          src={item.image_url || '/logo.png'}
+                          alt="image"
+                          height={80}
+                          width={80}
+                          className="h-20 w-20 rounded-xl object-cover"
+                        />
+                        <div className="space-y-1">
+                          <p className="text-base font-medium text-gray-800">{item.product_name}</p>
+                          <p className="text-sm text-gray-500">{item.volume_ml}ml</p>
+                          <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <p className="text-lg font-semibold text-gray-800">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.25 }}
+                    className="py-10 text-center text-gray-500"
+                  >
+                    Your cart is empty. <br />
+                    <a href="/shop" className="text-blue-600 underline">
+                      Browse to shop
+                    </a>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
-      {/* Content Expand full width bg */}
-      <div className="w-full overflow-hidden bg-[#EAEDF4] transition-all duration-300">
-        <div
-          className={`mx-auto max-w-[40rem] px-5 transition-all duration-300 ${
-            isOpen ? 'h-32 p-5' : 'h-0 p-0'
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex h-24 items-center gap-2.5">
-              <Image
-                src="https://res.cloudinary.com/ddsnh547w/image/upload/v1747561220/miska-sage-GnF5Xpu-764-unsplash_ekecqp.jpg"
-                alt="image"
-                height={600}
-                width={600}
-                className="h-full w-auto rounded-2xl object-cover"
-              />
-              <div className="space-y-1">
-                <p>HYALURONIC ACID FACE SERUM</p>
-                <p>25ml</p>
-                <div className="flex w-24 items-center justify-between">
-                  <span className="bg-blacky flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-white">
-                    -
-                  </span>
-                  <p className="text-lg">2</p>
-                  <span className="bg-blacky flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-white">
-                    +
-                  </span>
-                </div>
+      <div className="w-full space-y-8 px-5 py-8 md:w-1/3 md:py-10">
+        <Card>
+          <CardHeader>
+            <CardTitle>Shipping Address</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit(() => {})}>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <Input {...register('firstName', { required: true })} placeholder="First name" />
+                <Input {...register('lastName', { required: true })} placeholder="Last name" />
               </div>
-            </div>
-            <p className="font-semibold">45$</p>
-          </div>
-        </div>
-      </div>
+              <Input {...register('email', { required: true })} placeholder="Email" />
+              <Input {...register('phone', { required: true })} placeholder="Phone" />
+              <Input {...register('street', { required: true })} placeholder="Street address" />
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <Input {...register('city', { required: true })} placeholder="City" />
+                <Input {...register('state', { required: true })} placeholder="State" />
+              </div>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <Input {...register('zip', { required: true })} placeholder="Postal Code" />
+                <Input {...register('country', { required: true })} placeholder="Country" />
+              </div>
 
-      {/* Express checkout */}
-      <div className="mx-auto mt-5 max-w-[40rem] px-5">
-        <p className="text-center text-gray-400">Express checkout</p>
-        <div className="mt-5 grid h-15 grid-cols-2 items-center gap-3">
-          {/* Paypal */}
-          <div className="flex h-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#FFC439] font-semibold">
-            <svg
-              width="20"
-              height="20"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="7.056000232696533 3 37.35095977783203 45"
-            >
-              <g xmlns="http://www.w3.org/2000/svg" clip-path="url(#a)">
-                <path
-                  fill="#002991"
-                  d="M38.914 13.35c0 5.574-5.144 12.15-12.927 12.15H18.49l-.368 2.322L16.373 39H7.056l5.605-36h15.095c5.083 0 9.082 2.833 10.555 6.77a9.687 9.687 0 0 1 .603 3.58z"
-                ></path>
-                <path
-                  fill="#60CDFF"
-                  d="M44.284 23.7A12.894 12.894 0 0 1 31.53 34.5h-5.206L24.157 48H14.89l1.483-9 1.75-11.178.367-2.322h7.497c7.773 0 12.927-6.576 12.927-12.15 3.825 1.974 6.055 5.963 5.37 10.35z"
-                ></path>
-                <path
-                  fill="#008CFF"
-                  d="M38.914 13.35C37.31 12.511 35.365 12 33.248 12h-12.64L18.49 25.5h7.497c7.773 0 12.927-6.576 12.927-12.15z"
-                ></path>
-              </g>
-            </svg>{' '}
-            Paypal
-          </div>
-
-          {/* Google Pay */}
-          <div className="bg-blacky flex h-full cursor-pointer items-center justify-center gap-2 rounded-lg font-semibold text-white">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 256 262"
-              xmlns="http://www.w3.org/2000/svg"
-              preserveAspectRatio="xMidYMid"
-            >
-              <path
-                d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
-                fill="#4285F4"
-              />
-              <path
-                d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
-                fill="#34A853"
-              />
-              <path
-                d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
-                fill="#FBBC05"
-              />
-              <path
-                d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
-                fill="#EB4335"
-              />
-            </svg>
-            Google Pay
-          </div>
-        </div>
+              {addressData && (
+                <Elements
+                  stripe={stripePromise}
+                  options={{
+                    mode: 'payment',
+                    amount: convertToSubcurrency(getTotalPrice()),
+                    currency: 'usd',
+                  }}
+                >
+                  <CheckoutPage
+                    amount={getTotalPrice()}
+                    userId={userId || ''}
+                    cartItems={localItems}
+                    totalAmount={getTotalPrice()}
+                    address={addressData}
+                    disabled={!isValid || getTotalPrice() === 0}
+                  />
+                </Elements>
+              )}
+            </form>
+          </CardContent>
+        </Card>
       </div>
-      <div className="mx-auto mt-4 flex max-w-[40rem] items-center px-5 text-gray-500">
-        <hr className="flex-grow border-t border-gray-300" />
-        <span className="px-4">OR</span>
-        <hr className="flex-grow border-t border-gray-300" />
-      </div>
-      <div className='mx-auto mt-5 max-w-[40rem] px-5'> <Elements stripe={stripePromise} options={{
-        mode: "payment",
-        amount: convertToSubcurrency(getTotalPrice()),
-        currency: "usd",
-      }}>
-        <CheckoutPage amount={getTotalPrice()} />
-      </Elements></div>
     </div>
   );
 };
 
 export default Page;
-
