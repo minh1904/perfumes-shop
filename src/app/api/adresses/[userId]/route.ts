@@ -4,9 +4,9 @@ import { addresses } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { db } from '@/db/db';
 
-export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
   try {
-    const { userId } = params;
+    const { userId } = await params;
 
     const [address] = await db
       .select()
