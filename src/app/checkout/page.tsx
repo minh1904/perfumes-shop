@@ -3,7 +3,7 @@
 import { useCartStore } from '@/stores';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import CheckoutPage from '@/components/checkoutPage';
@@ -11,22 +11,33 @@ import convertToSubcurrency from '@/lib/convertToSubcurrency';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
-import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || '');
 
 type Address = {
   full_name: string;
   phone_number: string;
   address_line1: string;
-  address_line2?: string;
+  address_line2: string;
   city: string;
-  state?: string;
-  postal_code?: string;
+  state: string;
+  postal_code: string;
   country: string;
 };
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || '');
+type CheckoutForm = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+};
 
 const Page = () => {
   const { getTotalPrice, items: localItems } = useCartStore();
@@ -34,10 +45,11 @@ const Page = () => {
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
+  const [submittedAddress, setSubmittedAddress] = useState<Address | null>(null);
+
   const {
     register,
     handleSubmit,
-    reset,
     formState: { isValid },
   } = useForm({
     mode: 'onChange',
@@ -54,52 +66,23 @@ const Page = () => {
     },
   });
 
-  const [addressData, setAddressData] = useState<Address | null>(null);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const fetchAddress = async () => {
-      try {
-        const res = await fetch(`/api/adresses/${userId}`);
-        if (!res.ok) throw new Error('Failed to fetch address');
-        const data = await res.json();
-
-        const [firstName, ...lastParts] = data.full_name?.split(' ') || [''];
-        reset({
-          firstName,
-          lastName: lastParts.join(' '),
-          email: '',
-          phone: data.phone_number || '',
-          street: data.address_line1 || '',
-          city: data.city || '',
-          state: data.state || '',
-          zip: data.postal_code || '',
-          country: data.country || 'Vietnam',
-        });
-
-        // Lưu lại address để truyền sang CheckoutPage
-        setAddressData({
-          full_name: data.full_name,
-          phone_number: data.phone_number,
-          address_line1: data.address_line1,
-          address_line2: '',
-          city: data.city,
-          state: data.state,
-          postal_code: data.postal_code,
-          country: data.country || 'Vietnam',
-        });
-      } catch (err) {
-        toast.warning('Could not load saved address.');
-        console.error(err);
-      }
+  const onSubmit = (data: CheckoutForm) => {
+    const fullAddress = {
+      full_name: `${data.firstName} ${data.lastName}`,
+      phone_number: data.phone,
+      address_line1: data.street,
+      address_line2: '',
+      city: data.city,
+      state: data.state,
+      postal_code: data.zip,
+      country: data.country,
     };
-
-    fetchAddress();
-  }, [userId, reset]);
+    setSubmittedAddress(fullAddress);
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-white md:flex-row">
+      {/* Order Summary */}
       <div className="max-h-screen w-full overflow-y-auto border-r border-gray-200 md:w-2/3">
         <div className="sticky top-0 z-10 w-full bg-[#F6F6F6]">
           <div
@@ -177,13 +160,14 @@ const Page = () => {
         </div>
       </div>
 
+      {/* Address + Payment */}
       <div className="w-full space-y-8 px-5 py-8 md:w-1/3 md:py-10">
         <Card>
           <CardHeader>
             <CardTitle>Shipping Address</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4" onSubmit={handleSubmit(() => {})}>
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <Input {...register('firstName', { required: true })} placeholder="First name" />
                 <Input {...register('lastName', { required: true })} placeholder="Last name" />
@@ -200,28 +184,36 @@ const Page = () => {
                 <Input {...register('country', { required: true })} placeholder="Country" />
               </div>
 
-              {addressData && (
-                <Elements
-                  stripe={stripePromise}
-                  options={{
-                    mode: 'payment',
-                    amount: convertToSubcurrency(getTotalPrice()),
-                    currency: 'usd',
-                  }}
-                >
-                  <CheckoutPage
-                    amount={getTotalPrice()}
-                    userId={userId || ''}
-                    cartItems={localItems}
-                    totalAmount={getTotalPrice()}
-                    address={addressData}
-                    disabled={!isValid || getTotalPrice() === 0}
-                  />
-                </Elements>
-              )}
+              <button
+                type="submit"
+                disabled={!isValid}
+                className="w-full rounded-lg bg-black py-3 text-white"
+              >
+                Comfirm address to checkout
+              </button>
             </form>
           </CardContent>
         </Card>
+
+        {submittedAddress && (
+          <Elements
+            stripe={stripePromise}
+            options={{
+              mode: 'payment',
+              amount: convertToSubcurrency(getTotalPrice()),
+              currency: 'usd',
+            }}
+          >
+            <CheckoutPage
+              amount={getTotalPrice()}
+              userId={userId || ''}
+              cartItems={localItems}
+              totalAmount={getTotalPrice()}
+              address={submittedAddress}
+              disabled={false}
+            />
+          </Elements>
+        )}
       </div>
     </div>
   );
