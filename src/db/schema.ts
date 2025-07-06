@@ -196,7 +196,13 @@ export const cartItems = pgTable('cart_items', {
   added_at: timestamp('added_at').defaultNow(),
 });
 
-export const orderStatusEnum = pgEnum('order_status', ['pending', 'paid', 'shipped', 'delivered']);
+export const orderStatusEnum = pgEnum('order_status', [
+  'pending',
+  'paid',
+  'shipped',
+  'delivered',
+  'cancelled',
+]);
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
   user_id: text('user_id')

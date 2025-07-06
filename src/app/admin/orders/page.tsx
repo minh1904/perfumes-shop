@@ -1,7 +1,12 @@
 import React from 'react';
+import OrderManagementPage from './OrderManagementPage';
 
 const Page = () => {
-  return <div>Page</div>;
+  return (
+    <div>
+      <OrderManagementPage />
+    </div>
+  );
 };
 
 export default Page;
