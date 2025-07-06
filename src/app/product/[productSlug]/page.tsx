@@ -39,9 +39,7 @@ export default async function ProductPage({ params }: Props) {
           </div>
           {/* Product Info Column */}
           <div className="flex flex-col justify-center space-y-8 lg:pt-8">
-            <TypeProduct
-              product={{ ...product, price: parseFloat((product.price as string) || '0') }}
-            />
+            <TypeProduct product={{ ...product, price: parseFloat(product.price) }} />
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { db } from '@/db/db';
 import { orderItems, orders, products, productVariants } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -41,7 +41,43 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return new NextResponse('Invalid status', { status: 400 });
   }
 
-  await db.update(orders).set({ status: parsed.data.status }).where(eq(orders.id, orderId));
+  const newStatus = parsed.data.status;
+
+  // 1. Lấy trạng thái hiện tại của đơn hàng
+  const [currentOrder] = await db
+    .select({ status: orders.status })
+    .from(orders)
+    .where(eq(orders.id, orderId));
+
+  if (!currentOrder) return new NextResponse('Order not found', { status: 404 });
+
+  const prevStatus = currentOrder.status;
+
+  // 2. Chỉ xử lý tồn kho nếu trạng thái từ "paid" sang "shipped" hoặc "cancelled"
+  if (
+    (prevStatus === 'paid' && newStatus === 'shipped') ||
+    (prevStatus === 'paid' && newStatus === 'cancelled')
+  ) {
+    const items = await db
+      .select({
+        variantId: orderItems.variant_id,
+        quantity: orderItems.quantity,
+      })
+      .from(orderItems)
+      .where(eq(orderItems.order_id, orderId));
+
+    for (const item of items) {
+      const delta = newStatus === 'shipped' ? -item.quantity : item.quantity;
+
+      await db
+        .update(productVariants)
+        .set({ stock: sql`${productVariants.stock} + ${delta}` })
+        .where(eq(productVariants.id, item.variantId));
+    }
+  }
+
+  // 3. Cập nhật trạng thái đơn hàng
+  await db.update(orders).set({ status: newStatus }).where(eq(orders.id, orderId));
 
   return new NextResponse(null, { status: 204 });
 }

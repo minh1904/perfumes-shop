@@ -1,4 +1,3 @@
-// file: /app/api/admin/orders/route.ts
 
 import { db } from '@/db/db';
 import { orders, users } from '@/db/schema';

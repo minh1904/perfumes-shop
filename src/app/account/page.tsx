@@ -1,6 +1,7 @@
 'use client';
 import { signoutUserAction } from '@/actions/sign-out-action';
 import Adresses from '@/components/account/Adresses';
+import UserOrderList from '@/components/account/UserOrderList';
 import { useCartStore } from '@/stores';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
@@ -68,7 +69,7 @@ const Page = () => {
           </div>
         )}
         {selected === 'adresses' && <Adresses />}
-        {selected === 'orders' && <p>Orders content here...</p>}
+        {selected === 'orders' && <UserOrderList />}
       </div>
     </div>
   );

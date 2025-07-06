@@ -16,7 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
       .limit(1);
 
     if (!address) {
-      return NextResponse.json({}, { status: 404 });
+      return NextResponse.json(null, { status: 200 });
     }
 
     return NextResponse.json(address);
