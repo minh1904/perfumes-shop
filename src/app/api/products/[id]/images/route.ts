@@ -1,4 +1,3 @@
-// app/api/products/[id]/images/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 import { eq } from 'drizzle-orm';
@@ -38,9 +37,10 @@ export async function GET(request: NextRequest, { params }: Props) {
 }
 
 // POST - Thêm ảnh mới
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: Props) {
   try {
-    const productId = parseInt(params.id);
+    const { id } = await params;
+    const productId = parseInt(id);
     const body = await request.json();
 
     if (!productId || isNaN(productId)) {
