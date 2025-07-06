@@ -4,12 +4,13 @@ import { eq, inArray } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function DELETE(_: Request, { params }: Props) {
   try {
-    const brandId = Number(params.id);
+    const { id } = await params;
+    const brandId = Number(id);
 
     // 1. Lấy danh sách sản phẩm của brand này
     const productList = await db
