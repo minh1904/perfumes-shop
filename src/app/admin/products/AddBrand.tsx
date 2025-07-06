@@ -45,6 +45,7 @@ export function AddBrand() {
       const res = await axios.get('/api/brands');
       setBrands(res.data.data || []);
     } catch (err) {
+      console.log(err);
       toast.error('Failed to load brands');
     }
   };
@@ -71,6 +72,7 @@ export function AddBrand() {
       setForm({ id: null, name: '' });
       loadBrands();
     } catch (err) {
+      console.log(err);
       toast.error('Failed to save brand');
     }
   };
@@ -87,6 +89,7 @@ export function AddBrand() {
       setDeleteTarget(null);
       loadBrands();
     } catch (err) {
+      console.log(err);
       toast.error('Failed to delete brand');
     }
   };
