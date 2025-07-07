@@ -1,27 +1,35 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { UserOrderDetailSheet } from './UserOrderDetailSheet';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { UserOrderDetailDialogContent } from './UserOrderDetailDialogContent';
 
-// Optional: Replace this with your full order detail component
 const OrderDialog = ({ orderId, onClose }: { orderId: number; onClose: () => void }) => {
   return (
     <Dialog open={!!orderId} onOpenChange={onClose}>
-      <DialogContent className="mt-10 max-h-[80vh] w-full max-w-xl overflow-y-auto rounded-md">
+      <DialogContent className="max-h-[70vh] w-full max-w-3xl overflow-y-auto rounded-lg p-6">
         <DialogHeader>
-          <DialogTitle>Order #{orderId}</DialogTitle>
+          <DialogTitle className="font-roslindale-medium-italic text-2xl">
+            Order #{orderId}
+          </DialogTitle>
         </DialogHeader>
-        <UserOrderDetailSheet orderId={orderId} />
+        <UserOrderDetailDialogContent orderId={orderId} />
       </DialogContent>
     </Dialog>
   );
 };
 
+const FILTERS = [
+  { label: 'All', value: 'all' },
+  { label: 'Processing', value: 'processing' },
+  { label: 'Delivered', value: 'delivered' },
+  { label: 'Cancelled', value: 'cancelled' },
+] as const;
+
+type FilterType = (typeof FILTERS)[number]['value'];
 type OrderStatus = 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
 
 interface Order {
@@ -52,39 +60,28 @@ const getStatusBadge = (status: OrderStatus) => {
   }
 };
 
-const FILTERS = [
-  { label: 'All', value: 'all' },
-  { label: 'Processing', value: 'processing' },
-  { label: 'Delivered', value: 'delivered' },
-  { label: 'Cancelled', value: 'cancelled' },
-] as const;
-
-type FilterType = (typeof FILTERS)[number]['value'];
-
 const UserOrderList = () => {
   const { data: session } = useSession();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState<FilterType>('all');
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      if (!session?.user?.id) return;
-      try {
-        const res = await fetch(`/api/orders/user/${session.user.id}`);
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        setOrders(data.orders || []);
-      } catch (err) {
-        console.error('Failed to fetch user orders:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: orders = [], isLoading } = useQuery<Order[]>({
+    queryKey: ['user-orders', session?.user?.id],
+    enabled: !!session?.user?.id,
+    queryFn: async () => {
+      if (!session?.user?.id) return [];
+      const res = await fetch(`/api/orders/user/${session.user.id}`);
+      if (!res.ok) throw new Error('Failed to fetch orders');
+      const data = await res.json();
+      return data.orders || [];
+    },
+  });
 
-    fetchOrders();
-  }, [session?.user?.id]);
+  const handleClose = async () => {
+    setSelectedOrderId(null);
+    await queryClient.invalidateQueries({ queryKey: ['user-orders', session?.user?.id] });
+  };
 
   const filteredOrders = orders.filter((order) => {
     if (filter === 'all') return true;
@@ -92,7 +89,7 @@ const UserOrderList = () => {
     return order.status === filter;
   });
 
-  if (loading)
+  if (isLoading)
     return (
       <div className="flex justify-center py-10">
         <Loader2 className="h-6 w-6 animate-spin" />
@@ -151,9 +148,7 @@ const UserOrderList = () => {
         </div>
       ))}
 
-      {!!selectedOrderId && (
-        <OrderDialog orderId={selectedOrderId} onClose={() => setSelectedOrderId(null)} />
-      )}
+      {!!selectedOrderId && <OrderDialog orderId={selectedOrderId} onClose={handleClose} />}
     </div>
   );
 };
