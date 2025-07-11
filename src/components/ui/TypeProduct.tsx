@@ -13,6 +13,11 @@ const TypeProduct = ({ product }: { product: Product }) => {
   const handleAddToCart = () => {
     if (!typeSelected) return;
 
+    if (quantity > typeSelected.stock) {
+      alert('Số lượng vượt quá tồn kho!');
+      return;
+    }
+
     addToCart({
       variant_id: typeSelected.id,
       quantity,
@@ -31,7 +36,10 @@ const TypeProduct = ({ product }: { product: Product }) => {
   };
 
   const increase = () => {
-    setQuantity(quantity + 1);
+    if (!typeSelected) return;
+    if (quantity < typeSelected.stock) {
+      setQuantity(quantity + 1);
+    }
   };
 
   const decrease = () => {
@@ -84,23 +92,27 @@ const TypeProduct = ({ product }: { product: Product }) => {
       </div>
 
       {/* Quantity selector */}
-      <div className="flex items-center gap-6">
-        <span className="text-sm font-medium tracking-wide text-gray-700 uppercase">QTY</span>
-        <div className="flex items-center rounded-full border border-gray-200">
-          <button
-            onClick={decrease}
-            className="hover:bg-blacky text-blacky flex h-10 w-10 cursor-pointer items-center justify-center rounded-l-full transition-colors hover:text-white"
-          >
-            −
-          </button>
-          <span className="w-16 text-center text-lg font-medium">{quantity}</span>
-          <button
-            onClick={increase}
-            className="hover:bg-blacky text-blacky flex h-10 w-10 cursor-pointer items-center justify-center rounded-r-full transition-colors hover:text-white"
-          >
-            +
-          </button>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-6">
+          <span className="text-sm font-medium tracking-wide text-gray-700 uppercase">QTY</span>
+          <div className="flex items-center rounded-full border border-gray-200">
+            <button
+              onClick={decrease}
+              className="hover:bg-blacky text-blacky flex h-10 w-10 cursor-pointer items-center justify-center rounded-l-full transition-colors hover:text-white"
+            >
+              −
+            </button>
+            <span className="w-16 text-center text-lg font-medium">{quantity}</span>
+            <button
+              onClick={increase}
+              disabled={quantity >= (typeSelected?.stock ?? Infinity)}
+              className="hover:bg-blacky text-blacky flex h-10 w-10 cursor-pointer items-center justify-center rounded-r-full transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              +
+            </button>
+          </div>
         </div>
+        <span className="text-sm text-gray-500">{typeSelected?.stock} remaining</span>
       </div>
 
       {/* Add to cart button */}
