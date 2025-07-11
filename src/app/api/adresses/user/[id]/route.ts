@@ -37,14 +37,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }): Promise<Response> {
+export async function PUT(req: Request, context: { params: { id: string } }): Promise<Response> {
+  const { id } = context.params;
   const session = await auth();
 
   if (!session || !session.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  if (params.id !== session.user.id) {
+  if (id !== session.user.id) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
