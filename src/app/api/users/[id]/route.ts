@@ -1,5 +1,3 @@
-// /app/api/users/[id]/route.ts
-
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
@@ -15,7 +13,17 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     return NextResponse.json({ message: 'Missing name or email' }, { status: 400 });
   }
 
-  const updateFields: any = { name, email, role };
+  const allowedRoles = ['user', 'admin'] as const;
+  const updateFields = {
+    name,
+    email,
+    role: allowedRoles.includes(role) ? role : undefined,
+  } as {
+    name?: string;
+    email?: string;
+    role?: 'user' | 'admin';
+    password?: string;
+  };
   if (password) updateFields.password = await argon2.hash(password);
 
   await db.update(users).set(updateFields).where(eq(users.id, id));
