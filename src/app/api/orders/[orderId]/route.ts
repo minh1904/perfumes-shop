@@ -6,15 +6,17 @@ import { sql } from 'drizzle-orm';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request, { params }: { params: Promise<{ orderId: string }> }) {
+export async function GET(
+  req: Request,
+  context: { params: { orderId: string } },
+): Promise<Response> {
   const session = await auth();
 
   if (!session || !session.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { orderId } = await params;
-  const orderIdNum = Number(orderId);
+  const orderIdNum = Number(context.params.orderId);
   if (isNaN(orderIdNum)) {
     return NextResponse.json({ error: 'Invalid order ID' }, { status: 400 });
   }

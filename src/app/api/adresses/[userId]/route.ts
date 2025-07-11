@@ -1,12 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 import { addresses } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { db } from '@/db/db';
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+export async function GET(
+  req: Request,
+  context: { params: { userId: string } },
+): Promise<Response> {
   try {
-    const { userId } = await params;
+    const { userId } = context.params;
 
     const [address] = await db
       .select()

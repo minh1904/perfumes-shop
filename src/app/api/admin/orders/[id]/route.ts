@@ -4,9 +4,8 @@ import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const orderId = Number(id);
+export async function GET(req: Request, context: { params: { id: string } }): Promise<Response> {
+  const orderId = Number(context.params.id);
 
   const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
 

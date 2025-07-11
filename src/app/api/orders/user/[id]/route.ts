@@ -4,8 +4,8 @@ import { orders } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export async function GET(req: Request, context: { params: { id: string } }): Promise<Response> {
+  const { id } = context.params;
   const session = await auth();
 
   // ✅ Kiểm tra đăng nhập

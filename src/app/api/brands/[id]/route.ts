@@ -7,9 +7,9 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-export async function DELETE(_: Request, { params }: Props) {
+export async function DELETE(req: Request, context: { params: { id: string } }) {
   try {
-    const { id } = await params;
+    const { id } = context.params;
     const brandId = Number(id);
 
     // 1. Lấy danh sách sản phẩm của brand này

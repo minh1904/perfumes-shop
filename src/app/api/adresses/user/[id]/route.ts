@@ -4,8 +4,8 @@ import { addresses } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export async function GET(req: Request, context: { params: { id: string } }): Promise<Response> {
+  const { id } = context.params;
   const session = await auth();
 
   if (!session || !session.user?.id) {
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const searchParams = req.nextUrl.searchParams;
+  const searchParams = new URL(req.url).searchParams;
   const getDefault = searchParams.get('default') === 'true';
 
   try {

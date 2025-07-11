@@ -8,10 +8,9 @@ type Props = {
 };
 
 // GET - Lấy tất cả ảnh của sản phẩm
-export async function GET(request: NextRequest, { params }: Props) {
+export async function GET(req: Request, context: { params: { id: string } }): Promise<Response> {
   try {
-    const param = await params;
-    const productId = parseInt(param.id);
+    const productId = parseInt(context.params.id);
 
     if (!productId || isNaN(productId)) {
       return NextResponse.json({ success: false, error: 'Invalid product ID' }, { status: 400 });

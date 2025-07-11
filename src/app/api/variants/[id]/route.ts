@@ -5,10 +5,9 @@ import { NextResponse } from 'next/server';
 type Props = {
   params: Promise<{ id: string }>;
 };
-export async function PUT(req: Request, { params }: Props) {
+export async function PUT(req: Request, context: { params: { id: string } }): Promise<Response> {
   try {
-    const param = await params;
-    const id = Number(param.id);
+    const id = Number(context.params.id);
     const body = await req.json();
     const { volume_ml, sku, price, stock } = body;
 
@@ -27,10 +26,9 @@ export async function PUT(req: Request, { params }: Props) {
   }
 }
 
-export async function DELETE(_: Request, { params }: Props) {
+export async function DELETE(_: Request, context: { params: { id: string } }): Promise<Response> {
   try {
-    const param = await params;
-    const id = Number(param.id);
+    const id = Number(context.params.id);
     await db.delete(productVariants).where(eq(productVariants.id, id));
     return NextResponse.json({ success: true });
   } catch (err) {

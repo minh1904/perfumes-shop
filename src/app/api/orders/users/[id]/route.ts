@@ -5,8 +5,8 @@ import { sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const orderId = Number(params.id);
+export async function GET(req: Request, context: { params: { id: string } }): Promise<Response> {
+  const orderId = Number(context.params.id);
 
   const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
   if (!order) return new NextResponse('Not found', { status: 404 });
@@ -27,8 +27,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   return NextResponse.json({ order: { ...order, items } });
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  const orderId = Number(params.id);
+export async function PATCH(req: Request, context: { params: { id: string } }): Promise<Response> {
+  const { id } = context.params;
+  const orderId = Number(id);
   const body = await req.json();
 
   const schema = z.object({
