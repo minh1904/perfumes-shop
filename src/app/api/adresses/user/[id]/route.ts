@@ -37,8 +37,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function PUT(req: Request, context: { params: { id: string } }): Promise<Response> {
-  const { id } = context.params;
+export async function PUT(req: Request, { params }: { params: { id: string } }): Promise<Response> {
+  const { id } = params;
   const session = await auth();
 
   if (!session || !session.user?.id) {
