@@ -28,6 +28,16 @@ export function UserOrderDetailDialogContent({ orderId }: { orderId: number }) {
     return <div className="p-6">Loading...</div>;
   }
 
+  // Tính toán quá 24h chưa
+  const createdAt = order.created_at ? new Date(order.created_at) : null;
+  const now = new Date();
+  let canCancel = false;
+  if (order.status === 'paid' && createdAt) {
+    const diffMs = now.getTime() - createdAt.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+    canCancel = diffHours <= 24;
+  }
+
   return (
     <div className="space-y-6 p-2" key={order.status}>
       <div className="border-b pb-6">
@@ -71,28 +81,30 @@ export function UserOrderDetailDialogContent({ orderId }: { orderId: number }) {
 
       {order.status === 'paid' && (
         <div className="mt-4 text-right">
-          <button
-            disabled={isCancelling}
-            onClick={async () => {
-              setIsCancelling(true);
-              const res = await fetch(`/api/orders/${order.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'cancelled' }),
-              });
+          {canCancel && (
+            <button
+              disabled={isCancelling}
+              onClick={async () => {
+                setIsCancelling(true);
+                const res = await fetch(`/api/orders/${order.id}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ status: 'cancelled' }),
+                });
 
-              if (res.ok) {
-                toast.success('Order cancelled');
-                await queryClient.invalidateQueries({ queryKey: ['user-order', orderId] });
-              } else {
-                toast.error('Failed to cancel order');
-              }
-              setIsCancelling(false);
-            }}
-            className="text-sm text-red-600 underline hover:opacity-80"
-          >
-            {isCancelling ? 'Cancelling...' : 'Cancel Order'}
-          </button>
+                if (res.ok) {
+                  toast.success('Order cancelled');
+                  await queryClient.invalidateQueries({ queryKey: ['user-order', orderId] });
+                } else {
+                  toast.error('Failed to cancel order');
+                }
+                setIsCancelling(false);
+              }}
+              className="text-sm text-red-600 underline hover:opacity-80"
+            >
+              {isCancelling ? 'Cancelling...' : 'Cancel Order'}
+            </button>
+          )}
         </div>
       )}
     </div>

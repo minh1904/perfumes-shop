@@ -91,6 +91,22 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ orderI
       return NextResponse.json({ message: 'Order already cancelled' }, { status: 400 });
     }
 
+    // Kiểm tra thời gian tạo đơn, chỉ cho phép huỷ trong 24h
+    if (order.created_at === null || order.created_at === undefined) {
+      return NextResponse.json({ error: 'Thiếu thông tin thời gian tạo đơn.' }, { status: 500 });
+    }
+    const createdAt =
+      order.created_at instanceof Date ? order.created_at : new Date(order.created_at);
+    const now = new Date();
+    const diffMs = now.getTime() - createdAt.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+    if (diffHours > 24) {
+      return NextResponse.json(
+        { error: 'Chỉ có thể huỷ đơn trong vòng 24 giờ sau khi đặt hàng.' },
+        { status: 400 },
+      );
+    }
+
     // 2. Lấy danh sách item
     const items = await db
       .select({
