@@ -4,8 +4,12 @@ import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-export async function GET(req: Request, context: { params: { id: string } }): Promise<Response> {
-  const orderId = Number(context.params.id);
+export async function GET(
+  req: Request,
+  context: { params: Promise<{ id: string }> },
+): Promise<Response> {
+  const { id } = await context.params;
+  const orderId = Number(id);
 
   const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
 
@@ -52,11 +56,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const prevStatus = currentOrder.status;
 
-  // 2. Chỉ xử lý tồn kho nếu trạng thái từ "paid" sang "shipped" hoặc "cancelled"
-  if (
-    (prevStatus === 'paid' && newStatus === 'shipped') ||
-    (prevStatus === 'paid' && newStatus === 'cancelled')
-  ) {
+  // 2. Chỉ cộng lại tồn kho khi hủy đơn hàng
+  if (prevStatus === 'paid' && newStatus === 'cancelled') {
     const items = await db
       .select({
         variantId: orderItems.variant_id,
@@ -66,11 +67,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       .where(eq(orderItems.order_id, orderId));
 
     for (const item of items) {
-      const delta = newStatus === 'shipped' ? -item.quantity : item.quantity;
-
+      // Cộng lại số lượng đã trừ khi tạo đơn hàng
       await db
         .update(productVariants)
-        .set({ stock: sql`${productVariants.stock} + ${delta}` })
+        .set({ stock: sql`${productVariants.stock} + ${item.quantity}` })
         .where(eq(productVariants.id, item.variantId));
     }
   }

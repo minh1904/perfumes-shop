@@ -45,7 +45,16 @@ const Page = () => {
               </div>
             ))}
           </div>
-
+          {session?.user?.role === 'admin' && (
+            <div className="mt-4">
+              <a
+                href="/admin/dashboard"
+                className="cursor-pointer font-normal text-blue-600 underline hover:text-blue-800"
+              >
+                Admin Dashboard
+              </a>
+            </div>
+          )}
           <p
             onClick={clickHandle}
             className="mt-5 cursor-pointer font-normal text-red-500 underline"
